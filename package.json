@@ -1,0 +1,8 @@
+{
+  "name": "@neon/core",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "repository": "git@github.com:the-neon/core.git",
+  "author": "stojce <stojce@me.com>",
+  "license": "MIT"
+}
