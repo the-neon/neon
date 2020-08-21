@@ -1,63 +1,8 @@
 {
-  "name": "neon",
-  "version": "0.0.4",
-  "private": true,
-  "engines": {
-    "node": ">= 12.16.0",
-    "yarn": ">=1.22.0"
-  },
-  "directories": {
-    "lib": "./dist"
-  },
-  "repository": "git@github.com:the-neon/neon.git",
+  "name": "@neon/core",
+  "version": "0.0.1",
+  "main": "build/index.js",
+  "repository": "git@github.com:the-neon/core.git",
   "author": "stojce <stojce@me.com>",
-  "license": "MIT",
-  "bin": {
-    "neon": "./bin/neon.js"
-  },
-  "scripts": {
-    "test": "jest --coverage",
-    "clean": "rm -rf dist",
-    "build:cli": "tsc -p ./packages/cli",
-    "build:core": "tsc -p ./packages/core",
-    "build:pg": "tsc -p ./packages/pg",
-    "build:gql": "tsc -p ./packages/gql",
-    "build": "tsc --build tsconfig.json",
-    "postinstall": "yarn build",
-    "pretty": "yarn prettier --write './packages/**/*.{yml,yaml,json,ts,tsx,js,jsx,scss,css,md,html}'"
-  },
-  "dependencies": {
-    "typescript": "^4.0.2"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "devDependencies": {
-    "@types/jest": "^26.0.14",
-    "@types/node": "^14.11.8",
-    "@types/source-map-support": "^0.5.3",
-    "@typescript-eslint/eslint-plugin": "^3.10.1",
-    "@typescript-eslint/parser": "^3.10.1",
-    "eslint": "^7.7.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "husky": "^4.2.5",
-    "jest": "^26.5.3",
-    "lint-staged": "^10.2.13",
-    "prettier": "^2.1.1",
-    "source-map-support": "^0.5.19",
-    "ts-jest": "^26.4.1"
-  },
-  "lint-staged": {
-    "packages/**/*.{yml,yaml,json,ts,tsx,js,jsx,scss,css,md,html}": [
-      "prettier --write"
-    ],
-    "packages/**/*.ts": [
-      "eslint --format=codeframe --fix"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  }
+  "license": "MIT"
 }
