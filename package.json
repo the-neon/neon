@@ -1,7 +1,14 @@
 {
-  "name": "@neon/core",
+  "name": "core",
   "version": "0.0.1",
-  "main": "build/index.js",
+  "main": "dist/index.js",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "directories": {
+    "lib": "./dist"
+  },
   "repository": "git@github.com:the-neon/core.git",
   "author": "stojce <stojce@me.com>",
   "license": "MIT",
