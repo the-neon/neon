@@ -1,4 +1,4 @@
-import { Actions } from "./enums";
+import { Actions } from "../enums";
 
 /* eslint-disable */
 export function Post(target: any, name: string) {}
