@@ -105,7 +105,3 @@ dist
 
 # MacOS
 .DS_Store
-
-# packages build
-packages/**/lib
-.local
