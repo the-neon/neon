@@ -64,10 +64,6 @@
     /* Temp */
     "noImplicitAny": false
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    ".build"
-  ]
+  "include": ["src/**/*"],
+  "exclude": [".build"]
 }

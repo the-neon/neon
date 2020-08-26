@@ -4,7 +4,7 @@
 //  00000100 - only delete - 4
 //  00001000 - only execute - 8
 //  00010000 - only approve - 16
-export enum Action {
+export enum Actions {
   Read = 1,
   Write = 1 << 1,
   Delete = 1 << 2,

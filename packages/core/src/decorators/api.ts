@@ -1,10 +1,10 @@
-import { Action } from "../enums";
+import { Actions } from "../enums";
 
 /* eslint-disable */
-export function Post(target: any, name: string) {}
-export function Put(target: any, name: string) {}
-export function Delete(target: any, name: string) {}
-export function Get(target: any, name: string) {}
+export function Post(target: any, name: string) { }
+export function Put(target: any, name: string) { }
+export function Delete(target: any, name: string) { }
+export function Get(target: any, name: string) { }
 
 /**
  * Method decorator for auth
@@ -16,12 +16,12 @@ export function Get(target: any, name: string) {}
  *  - @Auth(Entities.Infrastructures, [Actions.Write, Actions.Deactivate])
  * @param roles string[]
  */
-export function Auth(roles?: any[] | string, action?: Action | Action[]) {
+export function Auth(roles?: any[], action?: Actions | Actions[]) {
   return (
     target: any,
     propertyKey: string,
     descriptor: PropertyDescriptor
-  ) => {};
+  ) => { };
 }
 
 /**
@@ -34,4 +34,4 @@ export function key(
   target: any,
   propertyKey: string | symbol,
   parameterIndex: number
-) {}
+) { }

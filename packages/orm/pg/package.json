@@ -1,0 +1,8 @@
+{
+  "name": "@neon/pg",
+  "main": "lib/index.js",
+  "version": "0.0.1",
+  "dependencies": {
+    "pg": "^8.3.2"
+  }
+}
