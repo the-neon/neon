@@ -1,3 +1,5 @@
 {
-  "name": "core"
+  "name": "@neon/core",
+  "main": "lib/index.js",
+  "version": "0.0.1"
 }
