@@ -1,14 +1,10 @@
 import { SchemaDirectiveVisitor } from "graphql-tools";
-import {
-  Action,
-  AuthenticationError,
-  AuthorizationError,
-} from "@the-neon/core";
-import Authorizer from "./Authorizer";
+import { Actions, AuthenticationError, AuthorizationError } from "@neon/core";
+import IAuthorizer from "./IAuthorizer";
 
 class AuthDirective extends SchemaDirectiveVisitor {
-  authorizer: Authorizer;
-  constructor(config: any, authorizer: Authorizer) {
+  authorizer: IAuthorizer;
+  constructor(config: any, authorizer: IAuthorizer) {
     super(config);
     this.authorizer = authorizer;
   }
@@ -49,7 +45,7 @@ class AuthDirective extends SchemaDirectiveVisitor {
         }
 
         const context = args[2];
-        const user = await this.authorizer?.getAuthenticatedUser();
+        const user = await this.authorizer?.getAuthenticcatedUser();
         if (!user) {
           throw new AuthenticationError();
         }
@@ -64,8 +60,8 @@ class AuthDirective extends SchemaDirectiveVisitor {
               (permission) =>
                 permission.entity === "any" ||
                 (user.permissions[permission.entity] &
-                  +Action[permission.action]) !==
-                  0
+                  +Actions[permission.action]) !==
+                0
             )
             .reduce((a, b) => a && b, true);
         }

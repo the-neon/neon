@@ -1,5 +1,6 @@
 export * from "./decorators";
 export * from "./enums";
+export * from "./errors";
 
 export type integer = number;
 export type long = number;

@@ -73,7 +73,7 @@ class PostgresDB {
     return resp["rowCount"];
   }
 
-  public async insert<T>(table: string, columns: any): Promise<T> {
+  public async insert<T>(table: string, columns: any[]): Promise<T> {
     const sanTable = this.sanitize(table);
     // await this.authorizationCheck({ table: sanTable, columns, filter: null, skipAuth });
 
@@ -134,10 +134,9 @@ class PostgresDB {
 
   public async getById<T>(
     table: string,
-    id: string | number,
-    filter?: any
+    id: string | number
   ): Promise<T | null> {
-    const rows = await this.getByIds<T>(table, [id], filter);
+    const rows = await this.getByIds<T>(table, [id]);
     if (rows && rows.length === 1) {
       return rows[0] as T;
     }
@@ -146,34 +145,21 @@ class PostgresDB {
 
   public async getByIds<T>(
     table: string,
-    ids: (string | number)[],
-    filter?: any
-  ): Promise<T[] | null> {
+    ids: (string | number)[]
+  ): Promise<T[]> {
     const sanTable = this.sanitize(table);
-
-    let where = "";
-    if (filter) {
-      where = `WHERE ${this.generateCondition(filter, ids.length)}`;
-    }
-
     const sql = `SELECT * FROM ${sanTable} WHERE id in (${ids.map(
       (_, ndx) => `$${ndx + 1}`
-    )}) ${where}`;
-
-    const rows = (this.getMany(sql, [
-      ...ids,
-      ...Object.values(filter ?? {}),
-    ]) as unknown) as T[];
+    )})`;
+    const rows = (this.getMany(sql, ids) as unknown) as T[];
     return rows;
   }
 
   public async getCount(table: string, filter: any): Promise<any> {
-    let where = "";
-    if (filter) {
-      where = `WHERE ${this.generateCondition(filter)}`;
-    }
+    const sql = `SELECT count(*) count 
+      FROM ${this.sanitize(table)}
+      WHERE ${this.generateCondition(filter)}`;
 
-    const sql = `SELECT count(*) count FROM ${this.sanitize(table)} ${where}`;
     const model = await this.query(sql, filter ? Object.values(filter) : []);
 
     if (model?.["rowCount"] === 1) {
@@ -268,7 +254,7 @@ class PostgresDB {
         (k, idx) =>
           `${this.toSnakeCase(k)}=$${(parameterOffset || 0) + idx + 1}`
       )
-      .join(" AND ");
+      .join(" and ");
   }
 
   private toSnakeCase(str) {
@@ -287,7 +273,6 @@ class PostgresDB {
     if (!PostgresDB.pool) {
       PostgresDB.pool = new Pool({
         connectionString: this.connectionString,
-        connectionTimeoutMillis: 2000,
       });
     }
 
