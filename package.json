@@ -14,7 +14,10 @@
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "rm -rf dist && tsc -p ./packages/core && tsc -p ./packages/orm/pg ",
+    "build:core": "tsc -p ./packages/core",
+    "build:pg": "tsc -p ./packages/orm/pg",
+    "build:gql": "tsc -p ./packages/api/gql",
+    "build": "tsc -p .",
     "postinstall": "yarn build",
     "pretty": "yarn prettier --write './packages/**/*.{yml,yaml,json,ts,tsx,js,jsx,scss,css,md,html}'"
   },
