@@ -3,10 +3,14 @@
   "main": "lib/index.js",
   "version": "0.0.1",
   "license": "MIT",
+  "bin": {
+    "neon": "./bin/neon.js"
+  },
   "dependencies": {
     "@neon/core": "file:../core",
     "apollo-server": "^2.16.1",
     "graphql": "^15.3.0",
-    "graphql-tools": "^6.1.0"
+    "graphql-tools": "^6.1.0",
+    "json5": "^2.1.3"
   }
 }

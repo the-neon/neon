@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
 
-import { readdirSync, readFileSync, writeFileSync } from "fs";
+import {
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  existsSync,
+} from "fs";
 import path from "path";
 import {
   SourceFile,
@@ -12,6 +18,8 @@ import {
   ScriptTarget,
   ScriptKind,
 } from "typescript";
+
+import { respolveConfig } from "./config";
 
 const classes = new Map();
 const queries: any[] = [];
@@ -421,14 +429,16 @@ const delint = (sourceFile: SourceFile) => {
   delintNode(sourceFile);
 };
 
-const directories = process.argv.slice(2);
-directories.forEach((directory) => {
+const config = respolveConfig();
+
+config.inputDirs.forEach((directory) => {
+  console.log("Parsing", directory);
   // Parse a file
 
   const files = readdirSync(directory);
   files.forEach((file) => {
     if (file.endsWith(".ts")) {
-      const fileName = `${directory}${file}`;
+      const fileName = path.join(directory, file);
       const sourceFile = createSourceFile(
         fileName,
         readFileSync(fileName).toString(),
@@ -627,7 +637,11 @@ tbs = "";
 schema.push(`${tbs}}\n`);
 schema.push("`;");
 
-const genpath = path.resolve(__dirname, "generated");
+const genpath = path.resolve(config.outDir);
+if (!existsSync(genpath)) {
+  mkdirSync(genpath);
+}
+
 const schemapath = path.resolve(genpath, "schema.ts");
 const resolverspath = path.resolve(genpath, "resolvers.ts");
 
