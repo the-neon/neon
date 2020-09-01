@@ -12,12 +12,16 @@
   "repository": "git@github.com:the-neon/core.git",
   "author": "stojce <stojce@me.com>",
   "license": "MIT",
+  "bin": {
+    "neon": "./bin/neon.js"
+  },
   "scripts": {
     "clean": "rm -rf dist",
+    "build:cli": "tsc -p ./packages/cli",
     "build:core": "tsc -p ./packages/core",
-    "build:pg": "tsc -p ./packages/orm/pg",
-    "build:gql": "tsc -p ./packages/api/gql",
-    "build": "tsc -p .",
+    "build:pg": "tsc -p ./packages/pg",
+    "build:gql": "tsc -p ./packages/gql",
+    "build": "tsc --build tsconfig.json",
     "postinstall": "yarn build",
     "pretty": "yarn prettier --write './packages/**/*.{yml,yaml,json,ts,tsx,js,jsx,scss,css,md,html}'"
   },
