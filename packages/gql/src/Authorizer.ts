@@ -1,7 +1,7 @@
 import User from "./User";
 
 interface Authorizer {
-  getAuthenticatedUser(): User;
+  getAuthenticcatedUser(): User;
 }
 
 export default Authorizer;
