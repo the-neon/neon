@@ -1,10 +1,10 @@
 import { SchemaDirectiveVisitor } from "graphql-tools";
 import { Actions, AuthenticationError, AuthorizationError } from "@neon/core";
-import IAuthorizer from "./IAuthorizer";
+import Authorizer from "./Authorizer";
 
 class AuthDirective extends SchemaDirectiveVisitor {
-  authorizer: IAuthorizer;
-  constructor(config: any, authorizer: IAuthorizer) {
+  authorizer: Authorizer;
+  constructor(config: any, authorizer: Authorizer) {
     super(config);
     this.authorizer = authorizer;
   }
