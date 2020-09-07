@@ -17,6 +17,12 @@ import {
   createSourceFile,
   ScriptTarget,
   ScriptKind,
+  createProgram,
+  TypeChecker,
+  isPropertyAssignment,
+  isIdentifier,
+  isImportDeclaration,
+  isStringLiteral,
 } from "typescript";
 
 import { respolveConfig } from "./config";
@@ -55,7 +61,7 @@ const camelize = (str: string) => {
     .replace(/\s+/g, "");
 };
 
-const delint = (sourceFile: SourceFile) => {
+const delint = (sourceFile: SourceFile, checker?: any) => {
   const delintNode = (node: Node) => {
     if (node.kind === SyntaxKind.ClassDeclaration) {
       const importName = node.parent["fileName"]
@@ -318,6 +324,21 @@ const delint = (sourceFile: SourceFile) => {
           members: [],
         };
 
+        if (node["heritageClauses"]) {
+          for (const clause of node["heritageClauses"]) {
+            // console.log("clause", clause);
+            // console.log("?escapedText", clause["types"]?.escapedText);
+            // console.log("escapedText", clause["escapedText"]);
+            // console.log("locals", clause["locals"]);
+            // for (const tip of clause["types"]) {
+            //   const uu = checker.getPropertySymbolOfDestructuringAssignment(
+            //     tip
+            //   );
+            //   console.log(uu);
+            // }
+          }
+        }
+
         node["members"].forEach((element) => {
           const member: {
             name: string;
@@ -436,6 +457,34 @@ config.inputDirs.forEach((directory) => {
   // Parse a file
 
   const files = readdirSync(directory);
+
+  const program = createProgram(files, {});
+  const checker: TypeChecker = program.getTypeChecker();
+
+  // for (const sourceFile of program.getSourceFiles()) {
+  //   console.log("sourceFile", sourceFile);
+
+  //   if (!sourceFile.isDeclarationFile) {
+  //     forEachChild(sourceFile, visit);
+  //   }
+  // }
+
+  // function visit(node: Node) {
+  //   console.log("symbolnode", node);
+  //   const count = node.getChildCount();
+
+  //   if (count > 0) {
+  //     forEachChild(node, visit);
+  //   }
+
+  //   if (isPropertyAssignment(node) && node.name) {
+  //     const symbol = checker.getSymbolAtLocation(node.name);
+  //     if (symbol) {
+  //       console.log("symbol", symbol);
+  //     }
+  //   }
+  // }
+
   files.forEach((file) => {
     if (file.endsWith(".ts")) {
       const fileName = path.join(directory, file);
@@ -448,7 +497,7 @@ config.inputDirs.forEach((directory) => {
       );
 
       // delint it
-      delint(sourceFile);
+      delint(sourceFile, checker);
     }
   });
 });
@@ -481,10 +530,10 @@ const createInputs = (functions: any[]) => {
 createInputs(queries);
 createInputs(mutations);
 
-imports.push(
-  `import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date';`
-);
-imports.push(`import GraphQLJSON from 'graphql-type-json';`);
+imports.push(`import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date';
+import GraphQLJSON from 'graphql-type-json'
+import { DataSource } from 'apollo-datasource';
+`);
 
 classes.forEach((cls) => {
   if (cls.methods) {
@@ -496,13 +545,40 @@ const lines: string[] = [];
 
 lines.push("/* eslint-disable max-len */");
 imports.forEach((imp) => lines.push(imp));
-lines.push("");
+lines.push(`
+
+class GqlDataSource extends DataSource {
+  private apiType: any;
+  private instance: any;
+
+  constructor(apiType) {
+    super();
+    this.apiType = apiType;
+  }
+
+  initialize?(config) {
+    if (!this.instance) {
+      this.instance = new this.apiType(config.context);
+    }
+  }
+
+  call(method, ...args) {
+    if (!this.instance) {
+      this.instance = new this.apiType();
+    }
+    return this.instance?.[method](...args);
+  }
+}
+
+`);
 lines.push(`export const APISources = {`);
 
 let tbs = "  ";
 classes.forEach((cls) => {
   if (cls.methods) {
-    lines.push(`${tbs}${cls.instanceName}: new ${cls.className}(),`);
+    lines.push(
+      `${tbs}${cls.instanceName}: new GqlDataSource(${cls.className}),`
+    );
   }
 });
 lines.push("");
@@ -520,9 +596,9 @@ queries.forEach((q) => {
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
       ", "
-    )} }, { dataSources }) => dataSources.${q.instance}.${
+    )} }, { dataSources }) => dataSources.${q.instance}.call('${
       q.methodName
-    }(${prms.join(", ")}),`
+    }', ${prms.join(", ")}),`
   );
 });
 
@@ -536,9 +612,9 @@ mutations.forEach((q) => {
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
       ", "
-    )} }, { dataSources }) => dataSources.${q.instance}.${
+    )} }, { dataSources }) => dataSources.${q.instance}.call('${
       q.methodName
-    }(${prms.join(", ")}),`
+    }', ${prms.join(", ")}),`
   );
 });
 
