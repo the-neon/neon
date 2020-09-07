@@ -45,7 +45,7 @@ class AuthDirective extends SchemaDirectiveVisitor {
         }
 
         const context = args[2];
-        const user = await this.authorizer?.getAuthenticcatedUser();
+        const user = await this.authorizer?.getAuthenticatedUser();
         if (!user) {
           throw new AuthenticationError();
         }

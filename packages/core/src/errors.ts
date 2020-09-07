@@ -6,7 +6,7 @@ class AuthorizationError extends Error {
 
   constructor() {
     super(AuthorizationError.DEFAULT_ERROR_MESSAGE);
-    this.type = "TyxAuthorizationError";
+    this.type = "AuthorizationError";
   }
 }
 
