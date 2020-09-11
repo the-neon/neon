@@ -13,6 +13,9 @@
     },
     {
       "path": "./packages/pg"
+    },
+    {
+      "path": "./packages/mysql"
     }
   ]
 }
