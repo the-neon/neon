@@ -21,4 +21,31 @@ class AuthenticationError extends Error {
   }
 }
 
-export { AuthorizationError, AuthenticationError };
+class InputError extends Error {
+  public static DEFAULT_ERROR_MESSAGE = "Request input is not valid!";
+
+  public type: string;
+
+  constructor(customMessage?: string) {
+    super(customMessage || AuthenticationError.DEFAULT_ERROR_MESSAGE);
+    this.type = "InputError";
+  }
+}
+
+class ItemNotFoundError extends Error {
+  public static DEFAULT_ERROR_MESSAGE = "Requested item is not found!";
+
+  public type: string;
+
+  constructor() {
+    super(AuthenticationError.DEFAULT_ERROR_MESSAGE);
+    this.type = "ItemNotFoundError";
+  }
+}
+
+export {
+  AuthorizationError,
+  AuthenticationError,
+  InputError,
+  ItemNotFoundError,
+};
