@@ -220,7 +220,22 @@ const delint = (sourceFile: SourceFile, checker?: any) => {
                 paramType = "String";
               } else if (param.type.kind === SyntaxKind.NumberKeyword) {
                 paramType = "Float";
-              } else if (param.type.kind === SyntaxKind.TypeReference) {
+              }
+
+              // temp fix
+              else if (
+                param.type &&
+                param.type.typeName &&
+                param.type.typeName.escapedText
+              ) {
+                if (param.type.typeName.escapedText === "integer") {
+                  paramType = "Int";
+                } else if (param.type.typeName.escapedText === "float") {
+                  paramType = "Float";
+                }
+              }
+              // temp fix - end
+              else if (param.type.kind === SyntaxKind.TypeReference) {
                 const typeName = param.type.typeName.escapedText;
                 if (typeName === "Date") {
                   paramType = "DateTime";
@@ -229,6 +244,9 @@ const delint = (sourceFile: SourceFile, checker?: any) => {
                 }
               } else {
                 const typeName = param.type.typeName.escapedText;
+                if (typeName === "integer") {
+                  console.log("TYPE NAME INTEGER");
+                }
                 switch (typeName) {
                   case "integer":
                     paramType = "Int";
