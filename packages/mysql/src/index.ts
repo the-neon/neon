@@ -1,14 +1,34 @@
 import { camelCase, snakeCase } from "change-case";
-import { Transaction } from "sequelize";
+import { Sequelize, Transaction } from "sequelize";
 import { connection } from "./connection";
 import QueryTypes from "./QueryTypes";
+import mysql2 from "mysql2";
 
 class MySqlDb {
   private transaction?: Transaction;
+  private connection: Sequelize;
+
+  constructor() {
+    this.connection = new Sequelize(
+      process.env.DB_DATABASE || "",
+      process.env.DB_USER || "",
+      process.env.DB_PASSWORD || "",
+      {
+        host: process.env.DB_HOST,
+        dialect: "mysql",
+        dialectModule: mysql2,
+        pool: {
+          min: 0,
+          max: 1,
+          idle: 1000,
+        },
+      }
+    );
+  }
 
   public async start(): Promise<void> {
     if (!this.transaction) {
-      this.transaction = await connection.transaction();
+      this.transaction = await this.connection.transaction();
     }
   }
 
@@ -23,15 +43,18 @@ class MySqlDb {
     sql: string,
     params?: Record<string, unknown>,
     queryType = QueryTypes.SELECT
-  ): Promise<Record<string, unknown> | Record<string, unknown>[] | null> {
+  ): Promise<Record<string, unknown> | Record<string, unknown>[] | unknown> {
     try {
-      const rows = (await connection.query(sql, {
+      const rows = (await this.connection.query(sql, {
         replacements: params,
         type: queryType,
         transaction: this.transaction,
       })) as unknown[];
 
+      console.log("execute query");
+
       if (queryType === QueryTypes.SELECT) {
+        console.log(`execute select: ${JSON.stringify(rows)}`);
         const results = rows.map((row) => this.castRow(row));
         return results;
       }
@@ -138,16 +161,25 @@ class MySqlDb {
   }
 
   private castRow(row) {
-    const keys = Object.keys(row);
-    const model = {};
-    keys.forEach(
-      (key) =>
-        (model[camelCase(key)] =
-          typeof row[key] === "object" ? this.castRow(row[key]) : row[key])
-    );
-    return model;
+    try {
+      const keys = Object.keys(row);
+      const model = {};
+      keys.forEach((key) => {
+        if (row[key] === null) {
+          model[camelCase(key)] = null;
+        } else if (typeof row[key] === "object") {
+          model[camelCase(key)] = this.castRow(row[key]);
+        } else {
+          model[camelCase(key)] = row[key];
+        }
+      });
+      return model;
+    } catch (e) {
+      console.log("Mysql error: ", JSON.stringify(e));
+    }
+    return null;
   }
 }
 
 export default MySqlDb;
-export { QueryTypes };
+export { QueryTypes, connection };
