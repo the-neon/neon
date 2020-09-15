@@ -84,7 +84,7 @@ class MySqlDb {
     params?: Record<string, unknown>
   ): Promise<Record<string, unknown>> {
     let results;
-    if (sqlOrTable.toLowerCase().startsWith("select")) {
+    if (sqlOrTable.toLowerCase().includes("select")) {
       results = await this.execute(sqlOrTable, params);
     } else {
       let condition = "";
@@ -103,7 +103,7 @@ class MySqlDb {
     sqlOrTable: string,
     params?: Record<string, unknown>
   ): Promise<Record<string, unknown>[]> {
-    if (sqlOrTable.toLowerCase().startsWith("select")) {
+    if (sqlOrTable.toLowerCase().includes("select")) {
       return this.execute(sqlOrTable, params) as Promise<
         Record<string, unknown>[]
       >;
