@@ -79,10 +79,10 @@ class MySqlDb {
     return null;
   }
 
-  async getOne(
+  async getOne<T>(
     sqlOrTable: string,
     params?: Record<string, unknown>
-  ): Promise<Record<string, unknown>> {
+  ): Promise<T> {
     let results;
     if (sqlOrTable.toLowerCase().includes("select")) {
       results = await this.execute(sqlOrTable, params);
@@ -99,14 +99,12 @@ class MySqlDb {
     return results?.[0];
   }
 
-  async getMany(
+  async getMany<T>(
     sqlOrTable: string,
     params?: Record<string, unknown>
-  ): Promise<Record<string, unknown>[]> {
+  ): Promise<T[]> {
     if (sqlOrTable.toLowerCase().includes("select")) {
-      return this.execute(sqlOrTable, params) as Promise<
-        Record<string, unknown>[]
-      >;
+      return this.execute(sqlOrTable, params) as Promise<T[]>;
     }
 
     let condition = "";
@@ -116,9 +114,7 @@ class MySqlDb {
         .join(" AND ")}`;
     }
     const generatedSql = `SELECT * FROM ${sqlOrTable} ${condition}`;
-    return this.execute(generatedSql, params) as Promise<
-      Record<string, unknown>[]
-    >;
+    return this.execute(generatedSql, params) as Promise<T[]>;
   }
 
   async insert(
