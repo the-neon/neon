@@ -39,6 +39,13 @@ class MySqlDb {
     }
   }
 
+  public async rollback(): Promise<void> {
+    if (this.transaction) {
+      await this.transaction.rollback();
+      this.transaction = undefined;
+    }
+  }
+
   async execute(
     sql: string,
     params?: Record<string, unknown>,
@@ -146,11 +153,14 @@ class MySqlDb {
   }
 
   async delete(
-    table: string,
+    sqlOrTable: string,
     condition: Record<string, unknown>
   ): Promise<unknown> {
+    if (sqlOrTable.toLowerCase().includes("select")) {
+      return this.execute(sqlOrTable, condition, QueryTypes.DELETE);
+    }
     const keys = Object.keys(condition);
-    const sql = `DELETE FROM ${table} WHERE ${keys
+    const sql = `DELETE FROM ${sqlOrTable} WHERE ${keys
       .map((k) => `${snakeCase(k)} = :${k}`)
       .join(" AND ")}`;
     return this.execute(sql, condition, QueryTypes.DELETE);
