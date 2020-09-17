@@ -8,7 +8,7 @@
   "directories": {
     "lib": "./dist"
   },
-  "repository": "git@github.com:the-neon/core.git",
+  "repository": "git@github.com:the-neon/neon.git",
   "author": "stojce <stojce@me.com>",
   "license": "MIT",
   "bin": {
