@@ -1,8 +1,16 @@
 {
-  "name": "@neon/pg",
+  "name": "@the-neon/pg",
   "main": "lib/index.js",
   "version": "0.0.1",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/the-neon/neon.git",
+    "directory": "packages/pg"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/the-neon"
+  },
   "dependencies": {
     "pg": "^8.3.2"
   }
