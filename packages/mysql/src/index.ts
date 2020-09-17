@@ -173,11 +173,22 @@ class MySqlDb {
       keys.forEach((key) => {
         if (row[key] === null) {
           model[camelCase(key)] = null;
-        } else if (typeof row[key] === "object") {
-          model[camelCase(key)] = this.castRow(row[key]);
-        } else {
-          model[camelCase(key)] = row[key];
+          return;
         }
+
+        if (Array.isArray(row[key])) {
+          if (typeof row[key][0] === "object") {
+            model[camelCase(key)] = row[key].map((o) => this.castRow(o));
+          } else {
+            model[camelCase(key)] = row[key];
+          }
+          return;
+        }
+        if (typeof row[key] === "object") {
+          model[camelCase(key)] = this.castRow(row[key]);
+          return;
+        }
+        model[camelCase(key)] = row[key];
       });
       return model;
     } catch (e) {
