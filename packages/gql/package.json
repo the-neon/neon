@@ -1,8 +1,16 @@
 {
-  "name": "@neon/gql",
+  "name": "@the-neon/gql",
   "main": "lib/index.js",
   "version": "0.0.1",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/the-neon/neon.git",
+    "directory": "packages/gql"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/the-neon"
+  },
   "bin": {
     "neon": "./bin/neon.js"
   },
