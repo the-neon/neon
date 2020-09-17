@@ -5,13 +5,20 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "ssh://git@github.com/the-neon/neon.git",
+    "url": "git+ssh://git@github.com/the-neon/neon.git",
     "directory": "packages/pg"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/the-neon"
   },
   "dependencies": {
     "pg": "^8.3.2"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/the-neon/neon/issues"
+  },
+  "homepage": "https://github.com/the-neon/neon#readme",
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "author": "",
+  "description": ""
 }
