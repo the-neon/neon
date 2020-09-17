@@ -61,7 +61,7 @@ const camelize = (str: string) => {
     .replace(/\s+/g, "");
 };
 
-const delint = (sourceFile: SourceFile, checker?: any) => {
+const delint = (sourceFile: SourceFile) => {
   const delintNode = (node: Node) => {
     if (node.kind === SyntaxKind.ClassDeclaration) {
       const importName = node.parent["fileName"]
@@ -476,33 +476,6 @@ config.inputDirs.forEach((directory) => {
 
   const files = readdirSync(directory);
 
-  const program = createProgram(files, {});
-  const checker: TypeChecker = program.getTypeChecker();
-
-  // for (const sourceFile of program.getSourceFiles()) {
-  //   console.log("sourceFile", sourceFile);
-
-  //   if (!sourceFile.isDeclarationFile) {
-  //     forEachChild(sourceFile, visit);
-  //   }
-  // }
-
-  // function visit(node: Node) {
-  //   console.log("symbolnode", node);
-  //   const count = node.getChildCount();
-
-  //   if (count > 0) {
-  //     forEachChild(node, visit);
-  //   }
-
-  //   if (isPropertyAssignment(node) && node.name) {
-  //     const symbol = checker.getSymbolAtLocation(node.name);
-  //     if (symbol) {
-  //       console.log("symbol", symbol);
-  //     }
-  //   }
-  // }
-
   files.forEach((file) => {
     if (file.endsWith(".ts")) {
       const fileName = path.join(directory, file);
@@ -515,7 +488,7 @@ config.inputDirs.forEach((directory) => {
       );
 
       // delint it
-      delint(sourceFile, checker);
+      delint(sourceFile);
     }
   });
 });
