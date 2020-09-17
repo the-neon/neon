@@ -8,6 +8,7 @@
   "directories": {
     "lib": "./dist"
   },
+  "private": true,
   "repository": "git@github.com:the-neon/neon.git",
   "author": "stojce <stojce@me.com>",
   "license": "MIT",
