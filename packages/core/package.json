@@ -1,9 +1,14 @@
 {
-  "name": "@neon/core",
+  "name": "@the-neon/core",
   "main": "lib/index.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/the-neon/neon.git",
+    "directory": "packages/core"
+  },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/the-neon"
   }
 }
