@@ -1,8 +1,16 @@
 {
-  "name": "@neon/mysql",
+  "name": "@the-neon/mysql",
   "main": "lib/index.js",
   "version": "0.0.1",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/the-neon/neon.git",
+    "directory": "packages/pg"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/the-neon"
+  },
   "dependencies": {
     "change-case": "^4.1.1",
     "mysql2": "^2.1.0",
