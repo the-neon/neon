@@ -232,6 +232,10 @@ const delint = (sourceFile: SourceFile) => {
                   paramType = "Int";
                 } else if (param.type.typeName.escapedText === "float") {
                   paramType = "Float";
+                } else if (
+                  param.type.typeName.escapedText.toLowerCase() === "date"
+                ) {
+                  paramType = "DateTime";
                 }
               }
               // temp fix - end
