@@ -184,7 +184,10 @@ class MySqlDb {
           }
           return;
         }
-        if (typeof row[key] === "object") {
+        if (
+          typeof row[key] === "object" &&
+          typeof row[key].getMonth !== "function"
+        ) {
           model[camelCase(key)] = this.castRow(row[key]);
           return;
         }
