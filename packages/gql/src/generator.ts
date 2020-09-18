@@ -209,6 +209,10 @@ const delint = (sourceFile: SourceFile) => {
               } else if (param.type.kind === SyntaxKind.ArrayType) {
                 if (param["type"].elementType.kind === SyntaxKind.AnyKeyword) {
                   paramType = `JSON`;
+                } else if (
+                  param["type"].elementType.typeName.escapedText === "integer"
+                ) {
+                  paramType = "[Int]";
                 } else {
                   paramType = `[${param["type"].elementType.typeName.escapedText}]`;
                 }
