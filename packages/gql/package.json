@@ -12,7 +12,7 @@
     "neon": "bin/neon.js"
   },
   "dependencies": {
-    "@the-neon/core": "0.0.2",
+    "@the-neon/core": "file:../core",
     "apollo-server": "^2.16.1",
     "graphql": "^15.3.0",
     "graphql-iso-date": "^3.6.1",

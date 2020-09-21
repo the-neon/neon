@@ -17,15 +17,29 @@ import {
   createSourceFile,
   ScriptTarget,
   ScriptKind,
-  createProgram,
-  TypeChecker,
-  isPropertyAssignment,
-  isIdentifier,
-  isImportDeclaration,
-  isStringLiteral,
 } from "typescript";
 
 import { respolveConfig } from "./config";
+
+enum BuiltinType {
+  String = "String",
+  StringRequired = "String!",
+  Date = "Date",
+  DateRequired = "Date!",
+  DateTime = "DateTime",
+  DateTimeRequired = "DateTime!",
+  Json = "JSON",
+}
+
+interface TypeProp {
+  name: string;
+  type: string;
+}
+
+interface TypeInterface {
+  name: string;
+  props: TypeProp[];
+}
 
 const classes = new Map();
 const queries: any[] = [];
@@ -33,6 +47,7 @@ const mutations: any[] = [];
 const imports: any[] = [];
 const enums: any[] = [];
 const inter = new Map();
+const typeInterfaces = new Map<string, TypeInterface>();
 
 let currentInstance = "";
 
@@ -344,7 +359,12 @@ const delint = (sourceFile: SourceFile) => {
         break;
 
       case SyntaxKind.InterfaceDeclaration: {
-        const iface: { kind: any; name: any; members: any[] } = {
+        const iface: {
+          kind: any;
+          name: any;
+          members: any[];
+          implements?: any;
+        } = {
           kind: null,
           name: node["name"].escapedText,
           members: [],
@@ -352,16 +372,23 @@ const delint = (sourceFile: SourceFile) => {
 
         if (node["heritageClauses"]) {
           for (const clause of node["heritageClauses"]) {
-            // console.log("clause", clause);
-            // console.log("?escapedText", clause["types"]?.escapedText);
-            // console.log("escapedText", clause["escapedText"]);
-            // console.log("locals", clause["locals"]);
-            // for (const tip of clause["types"]) {
-            //   const uu = checker.getPropertySymbolOfDestructuringAssignment(
-            //     tip
-            //   );
-            //   console.log(uu);
-            // }
+            const name = clause.types[0].expression.escapedText;
+            const typeIface = typeInterfaces.get(name);
+            const typeModel = inter.get(name);
+
+            // move from Type to Interface
+            if (!typeIface && typeModel) {
+              typeInterfaces.set(name, {
+                name,
+                props: typeModel.members.map((mem) => ({
+                  name: mem.name,
+                  type: mem.typeName,
+                })),
+              });
+              inter.delete(name);
+            }
+            iface.implements = name;
+            break;
           }
         }
 
@@ -652,12 +679,30 @@ enums.forEach((en) => {
   schema.push(`${tbs}}\n`);
 });
 
+typeInterfaces.forEach((iface) => {
+  schema.push(`interface ${iface.name} {`);
+  tbs = "  ";
+
+  iface.props.forEach((prop) => {
+    schema.push(`${tbs}${prop.name}: ${prop.type}`);
+  });
+
+  schema.push(`}`);
+  tbs = "";
+});
+
 inter.forEach((ifc) => {
   if (!ifc) {
     return;
   }
-  schema.push(`${tbs}${ifc.kind || "type"} ${ifc.name} {`);
+
+  schema.push(
+    `${tbs}${ifc.kind || "type"} ${ifc.name}${
+      ifc.implements ? " implements " + ifc.implements : ""
+    } {`
+  );
   tbs = "  ";
+
   ifc.members.forEach((member) => {
     schema.push(
       `${tbs}${member.name}: ${member.typeName}${member.optional ? "" : "!"}`
