@@ -73,11 +73,11 @@ class MySqlDb {
 
       if (queryType === QueryTypes.UPDATE) {
         const [, affectedRows] = rows;
-        return affectedRows ? { params } : null;
+        return affectedRows ? params : null;
       }
 
       if (queryType === QueryTypes.DELETE) {
-        return rows ? null : { params };
+        return rows ? null : params;
       }
     } catch (e) {
       // eslint-disable-next-line
