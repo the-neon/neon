@@ -15,8 +15,8 @@ class AuthenticationError extends Error {
 
   public type: string;
 
-  constructor() {
-    super(AuthenticationError.DEFAULT_ERROR_MESSAGE);
+  constructor(message?: string) {
+    super(message ?? AuthenticationError.DEFAULT_ERROR_MESSAGE);
     this.type = "AuthenticationError";
   }
 }
@@ -27,7 +27,7 @@ class InputError extends Error {
   public type: string;
 
   constructor(customMessage?: string) {
-    super(customMessage || AuthenticationError.DEFAULT_ERROR_MESSAGE);
+    super(customMessage ?? AuthenticationError.DEFAULT_ERROR_MESSAGE);
     this.type = "InputError";
   }
 }
