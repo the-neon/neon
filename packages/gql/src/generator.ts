@@ -239,38 +239,13 @@ const delint = (sourceFile: SourceFile) => {
                 paramType = "String";
               } else if (param.type.kind === SyntaxKind.NumberKeyword) {
                 paramType = "Float";
-              }
+              } else if (param.type.kind === SyntaxKind.TypeReference) {
+                const typeName = param.type.typeName.escapedText;
 
-              // temp fix
-              else if (
-                param.type &&
-                param.type.typeName &&
-                param.type.typeName.escapedText
-              ) {
-                if (param.type.typeName.escapedText === "integer") {
-                  paramType = "Int";
-                } else if (param.type.typeName.escapedText === "float") {
-                  paramType = "Float";
-                } else if (
-                  param.type.typeName.escapedText.toLowerCase() === "date"
-                ) {
-                  paramType = "DateTime";
-                }
-              }
-              // temp fix - end
-              else if (param.type.kind === SyntaxKind.TypeReference) {
-                const typeName = param.type.typeName.escapedText;
-                if (typeName === "Date") {
-                  paramType = "DateTime";
-                } else {
-                  paramType = typeName;
-                }
-              } else {
-                const typeName = param.type.typeName.escapedText;
-                if (typeName === "integer") {
-                  console.log("TYPE NAME INTEGER");
-                }
                 switch (typeName) {
+                  case "Date":
+                    paramType = "DateTime";
+                    break;
                   case "integer":
                     paramType = "Int";
                     break;
@@ -278,8 +253,12 @@ const delint = (sourceFile: SourceFile) => {
                     paramType = "Float";
                     break;
                   default:
-                    console.log("Defaluting type to JSON, ", param.type.kind);
-                    paramType = "JSON";
+                    console.log(
+                      "Defaulting type to JSON, ",
+                      param.type.kind,
+                      typeName
+                    );
+                    paramType = typeName || "JSON";
                     break;
                 }
               }
@@ -455,7 +434,13 @@ const delint = (sourceFile: SourceFile) => {
             case SyntaxKind.ArrayType: {
               try {
                 member.scalar = false;
-                member.typeName = `[${element.type.elementType.typeName.escapedText}]`;
+                if (
+                  element.type.elementType.typeName.escapedText === "integer"
+                ) {
+                  member.typeName = "[Int]";
+                } else {
+                  member.typeName = `[${element.type.elementType.typeName.escapedText}]`;
+                }
               } catch (ex) {
                 member.typeName = "JSON";
               }
