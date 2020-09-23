@@ -124,23 +124,20 @@ class MySqlDb {
     return this.execute(generatedSql, params) as Promise<T[]>;
   }
 
-  async insert(
-    table: string,
-    columns: Record<string, unknown>
-  ): Promise<unknown> {
+  async insert<T>(table: string, columns: Record<string, unknown>): Promise<T> {
     const keys = Object.keys(columns);
     const sql = `INSERT INTO 
       ${table} (${keys.map((a) => `${snakeCase(a)}`)}) 
       VALUES (${keys.map((key) => `:${key}`)})`;
 
-    return this.execute(sql, columns, QueryTypes.INSERT);
+    return this.execute(sql, columns, QueryTypes.INSERT) as Promise<T>;
   }
 
-  async update(
+  async update<T>(
     table: string,
     condition: Record<string, unknown>,
     columns: Record<string, unknown>
-  ): Promise<unknown> {
+  ): Promise<T> {
     const keys = Object.keys(columns);
     const conditionKeys = Object.keys(condition);
 
@@ -149,7 +146,11 @@ class MySqlDb {
       WHERE ${conditionKeys
         .map((k) => `${snakeCase(k)} = :${k}`)
         .join(" AND ")}`;
-    return this.execute(sql, { ...condition, ...columns }, QueryTypes.UPDATE);
+    return this.execute(
+      sql,
+      { ...condition, ...columns },
+      QueryTypes.UPDATE
+    ) as Promise<T>;
   }
 
   async delete(
