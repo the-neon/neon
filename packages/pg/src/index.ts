@@ -73,7 +73,7 @@ class PostgresDB {
     return resp["rowCount"];
   }
 
-  public async insert<T>(table: string, columns: any[]): Promise<T> {
+  public async insert<T>(table: string, columns: any): Promise<T> {
     const sanTable = this.sanitize(table);
     // await this.authorizationCheck({ table: sanTable, columns, filter: null, skipAuth });
 
