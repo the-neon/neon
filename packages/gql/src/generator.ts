@@ -246,36 +246,14 @@ const delint = (sourceFile: SourceFile) => {
               } else if (param.type.kind === SyntaxKind.StringKeyword) {
                 paramType = BuiltinType.String;
               } else if (param.type.kind === SyntaxKind.NumberKeyword) {
-                paramType = BuiltinType.Float;
-              }
+                paramType = "Float";
+              } else if (param.type.kind === SyntaxKind.TypeReference) {
+                const typeName = param.type.typeName.escapedText;
 
-              // temp fix
-              else if (
-                param.type &&
-                param.type.typeName &&
-                param.type.typeName.escapedText
-              ) {
-                if (param.type.typeName.escapedText === "integer") {
-                  paramType = BuiltinType.Int;
-                } else if (param.type.typeName.escapedText === "float") {
-                  paramType = BuiltinType.Float;
-                } else if (
-                  param.type.typeName.escapedText.toLowerCase() === "date"
-                ) {
-                  paramType = BuiltinType.DateTime;
-                }
-              }
-              // temp fix - end
-              else if (param.type.kind === SyntaxKind.TypeReference) {
-                const typeName = param.type.typeName.escapedText;
-                if (typeName === "Date") {
-                  paramType = BuiltinType.DateTime;
-                } else {
-                  paramType = typeName;
-                }
-              } else {
-                const typeName = param.type.typeName.escapedText;
                 switch (typeName) {
+                  case "Date":
+                    paramType = "DateTime";
+                    break;
                   case "integer":
                     paramType = BuiltinType.Int;
                     break;
@@ -283,8 +261,12 @@ const delint = (sourceFile: SourceFile) => {
                     paramType = BuiltinType.Float;
                     break;
                   default:
-                    console.log("Defaluting type to JSON, ", param.type.kind);
-                    paramType = BuiltinType.Json;
+                    console.log(
+                      "Defaulting type to JSON, ",
+                      param.type.kind,
+                      typeName
+                    );
+                    paramType = typeName || "JSON";
                     break;
                 }
               }
@@ -461,7 +443,13 @@ const delint = (sourceFile: SourceFile) => {
             case SyntaxKind.ArrayType: {
               try {
                 member.scalar = false;
-                member.typeName = `[${element.type.elementType.typeName.escapedText}]`;
+                if (
+                  element.type.elementType.typeName.escapedText === "integer"
+                ) {
+                  member.typeName = "[Int]";
+                } else {
+                  member.typeName = `[${element.type.elementType.typeName.escapedText}]`;
+                }
               } catch (ex) {
                 member.typeName = "JSON";
               }
@@ -628,8 +616,7 @@ queries.forEach((q) => {
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
       ", "
-    )} }, { dataSources }) => dataSources.${q.instance}.call('${
-      q.methodName
+    )} }, { dataSources }) => dataSources.${q.instance}.call('${q.methodName
     }', ${prms.join(", ")}),`
   );
 });
@@ -644,8 +631,7 @@ mutations.forEach((q) => {
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
       ", "
-    )} }, { dataSources }) => dataSources.${q.instance}.call('${
-      q.methodName
+    )} }, { dataSources }) => dataSources.${q.instance}.call('${q.methodName
     }', ${prms.join(", ")}),`
   );
 });
@@ -703,8 +689,7 @@ inter.forEach((ifc) => {
   }
 
   schema.push(
-    `${tbs}${ifc.kind || "type"} ${ifc.name}${
-      ifc.implements ? " implements " + ifc.implements : ""
+    `${tbs}${ifc.kind || "type"} ${ifc.name}${ifc.implements ? " implements " + ifc.implements : ""
     } {`
   );
   tbs = "  ";
