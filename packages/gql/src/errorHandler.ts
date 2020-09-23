@@ -8,6 +8,7 @@ import {
 import { GraphQLError } from "graphql";
 
 const errorHandler = (ex: GraphQLError): Error => {
+  console.error(JSON.stringify(ex));
   const originalErrorType = ex?.originalError?.["type"];
   const originalErrorMessage = ex?.originalError?.["message"];
 
