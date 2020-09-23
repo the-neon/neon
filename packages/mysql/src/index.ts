@@ -82,6 +82,9 @@ class MySqlDb {
     } catch (e) {
       // eslint-disable-next-line
       console.log(JSON.stringify(e));
+      if (queryType !== QueryTypes.SELECT) {
+        throw e;
+      }
     }
     return null;
   }
