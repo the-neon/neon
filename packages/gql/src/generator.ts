@@ -512,7 +512,7 @@ const delint = (sourceFile: SourceFile) => {
 const config = respolveConfig();
 
 config.inputDirs.forEach((directory) => {
-  console.log("Parsing", directory);
+  console.log("🔨 Parsing", directory);
   // Parse a file
 
   const files = readdirSync(directory);
