@@ -1,4 +1,4 @@
-import { Actions } from "../enums";
+import { Action } from "../enums";
 
 /* eslint-disable */
 export function Post(target: any, name: string) {}
@@ -16,7 +16,7 @@ export function Get(target: any, name: string) {}
  *  - @Auth(Entities.Infrastructures, [Actions.Write, Actions.Deactivate])
  * @param roles string[]
  */
-export function Auth(roles?: any[], action?: Actions | Actions[]) {
+export function Auth(roles?: any[] | string, action?: Action | Action[]) {
   return (
     target: any,
     propertyKey: string,
