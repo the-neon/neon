@@ -246,13 +246,13 @@ const delint = (sourceFile: SourceFile) => {
               } else if (param.type.kind === SyntaxKind.StringKeyword) {
                 paramType = BuiltinType.String;
               } else if (param.type.kind === SyntaxKind.NumberKeyword) {
-                paramType = "Float";
-              } else if (param.type.kind === SyntaxKind.TypeReference) {
+                paramType = BuiltinType.Float;
+              } else {
                 const typeName = param.type.typeName.escapedText;
 
                 switch (typeName) {
                   case "Date":
-                    paramType = "DateTime";
+                    paramType = BuiltinType.DateTime;
                     break;
                   case "integer":
                     paramType = BuiltinType.Int;
@@ -266,7 +266,8 @@ const delint = (sourceFile: SourceFile) => {
                       param.type.kind,
                       typeName
                     );
-                    paramType = typeName || "JSON";
+                    paramType = typeName || BuiltinType.Json;
+                    console.log("Defaluting type to JSON, ", param.type.kind);
                     break;
                 }
               }
