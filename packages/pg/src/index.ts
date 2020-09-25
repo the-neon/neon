@@ -273,6 +273,7 @@ class PostgresDB {
     if (!PostgresDB.pool) {
       PostgresDB.pool = new Pool({
         connectionString: this.connectionString,
+        connectionTimeoutMillis: 2000,
       });
     }
 
