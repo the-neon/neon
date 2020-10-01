@@ -1,7 +1,6 @@
 {
   "name": "@the-neon/core",
   "main": "lib/index.js",
-  "version": "0.0.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -16,5 +15,6 @@
     "lib": "lib"
   },
   "author": "",
-  "description": ""
+  "description": "",
+  "version": "0.0.3"
 }
