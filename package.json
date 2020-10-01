@@ -1,6 +1,6 @@
 {
   "name": "neon",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "node": ">= 12.16.0",
     "yarn": ">=1.22.0"
@@ -8,7 +8,6 @@
   "directories": {
     "lib": "./dist"
   },
-  "private": true,
   "repository": "git@github.com:the-neon/neon.git",
   "author": "stojce <stojce@me.com>",
   "license": "MIT",
