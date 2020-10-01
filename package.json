@@ -1,6 +1,6 @@
 {
   "name": "neon",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "node": ">= 12.16.0",
     "yarn": ">=1.22.0"
