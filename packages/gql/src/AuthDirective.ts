@@ -1,6 +1,6 @@
 import { SchemaDirectiveVisitor } from "graphql-tools";
 import {
-  Actions,
+  Action,
   AuthenticationError,
   AuthorizationError,
 } from "@the-neon/core";
@@ -64,7 +64,7 @@ class AuthDirective extends SchemaDirectiveVisitor {
               (permission) =>
                 permission.entity === "any" ||
                 (user.permissions[permission.entity] &
-                  +Actions[permission.action]) !==
+                  +Action[permission.action]) !==
                 0
             )
             .reduce((a, b) => a && b, true);
