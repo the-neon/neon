@@ -8,6 +8,7 @@
     { "path": "./packages/core" },
     { "path": "./packages/gql" },
     { "path": "./packages/pg" },
+    { "path": "./packages/dynamodb" },
     { "path": "./packages/mysql" }
   ]
 }
