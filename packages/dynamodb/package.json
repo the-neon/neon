@@ -1,0 +1,31 @@
+{
+  "name": "@the-neon/dynamodb",
+  "main": "lib/index.js",
+  "version": "0.0.4",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/the-neon/neon.git",
+    "directory": "packages/dynamodb"
+  },
+  "peerDependencies": {
+    "@the-neon/core": "file:../core",
+    "aws-sdk": "^2.768.0"
+  },
+  "bugs": {
+    "url": "https://github.com/the-neon/neon/issues"
+  },
+  "homepage": "https://github.com/the-neon/neon#readme",
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "description": "",
+  "dependencies": {
+    "aws-sdk": "^2.768.0"
+  }
+}
