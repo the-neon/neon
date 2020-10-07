@@ -1,7 +1,7 @@
 {
   "name": "@the-neon/gql",
   "main": "lib/index.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -11,8 +11,10 @@
   "bin": {
     "neon": "bin/neon.js"
   },
+  "peerDependencies": {
+    "@the-neon/core": "file:../core"
+  },
   "dependencies": {
-    "@the-neon/core": "file:../core",
     "apollo-server": "^2.16.1",
     "chalk": "^4.1.0",
     "graphql": "^15.3.0",
