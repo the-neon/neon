@@ -1,22 +1,28 @@
 {
   "name": "@the-neon/mysql",
   "main": "lib/index.js",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "ssh://git@github.com/the-neon/neon.git",
-    "directory": "packages/pg"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/the-neon"
+    "url": "git+ssh://git@github.com/the-neon/neon.git",
+    "directory": "packages/mysql"
   },
   "dependencies": {
     "change-case": "^4.1.1",
     "mysql2": "^2.1.0",
     "sequelize": "^6.3.5"
   },
+  "bugs": {
+    "url": "https://github.com/the-neon/neon/issues"
+  },
+  "homepage": "https://github.com/the-neon/neon#readme",
+  "directories": {
+    "lib": "lib"
+  },
   "devDependencies": {
     "@types/node": "^14.6.4"
-  }
+  },
+  "author": "",
+  "description": ""
 }
