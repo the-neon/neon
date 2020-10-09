@@ -583,6 +583,7 @@ lines.push(`
 class GqlDataSource extends DataSource {
   private apiType: any;
   private instance: any;
+  private appContext: any;
 
   constructor(apiType) {
     super();
@@ -590,14 +591,12 @@ class GqlDataSource extends DataSource {
   }
 
   initialize?(config) {
-    if (!this.instance) {
-      this.instance = new this.apiType(config.context);
-    }
+    this.appContext = config?.context?.appContext;
   }
 
   call(method, ...args) {
     if (!this.instance) {
-      this.instance = new this.apiType();
+      this.instance = new this.apiType(this.appContext);
     }
     return this.instance?.[method](...args);
   }
