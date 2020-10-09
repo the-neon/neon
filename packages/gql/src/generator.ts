@@ -580,6 +580,7 @@ class GqlDataSource extends DataSource {
   }
 
   initialize?(config) {
+    this.instance = null;
     this.appContext = config?.context?.appContext;
   }
 
