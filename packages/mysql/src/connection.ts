@@ -14,6 +14,7 @@ const connection = new Sequelize(
       max: 1,
       idle: 1000,
     },
+    logging: process.env.DB_ENABLE_QUERY_LOGS === "true",
   }
 );
 
