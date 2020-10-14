@@ -1,7 +1,7 @@
 {
   "name": "@the-neon/pg",
   "main": "lib/index.js",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,6 +13,9 @@
   },
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
+  },
+  "scripts": {
+    "test": "jest --coverage"
   },
   "homepage": "https://github.com/the-neon/neon#readme",
   "directories": {
