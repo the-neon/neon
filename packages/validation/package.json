@@ -1,15 +1,12 @@
 {
-  "name": "@the-neon/pg",
+  "name": "@the-neon/validation",
   "main": "lib/index.js",
-  "version": "0.0.6",
+  "version": "0.0.1",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/the-neon/neon.git",
-    "directory": "packages/pg"
-  },
-  "dependencies": {
-    "pg": "^8.3.2"
+    "directory": "packages/validation"
   },
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
@@ -21,9 +18,9 @@
   "directories": {
     "lib": "lib"
   },
-  "devDependencies": {
-    "@types/pg": "^7.14.5"
+  "peerDependencies": {
+    "@the-neon/core": "file:../core"
   },
   "author": "Stojce Slavkovski",
-  "description": "PostgreSQL client for Neon"
+  "description": "Validation support for Neon"
 }
