@@ -9,6 +9,9 @@
       "path": "./packages/core"
     },
     {
+      "path": "./packages/validation"
+    },
+    {
       "path": "./packages/gql"
     },
     {

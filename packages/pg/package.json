@@ -24,6 +24,6 @@
   "devDependencies": {
     "@types/pg": "^7.14.5"
   },
-  "author": "",
-  "description": ""
+  "author": "Stojce Slavkovski",
+  "description": "PostgreSQL client for Neon"
 }
