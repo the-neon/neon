@@ -16,6 +16,7 @@
     "neon": "./bin/neon.js"
   },
   "scripts": {
+    "test": "jest --coverage",
     "clean": "rm -rf dist",
     "build:cli": "tsc -p ./packages/cli",
     "build:core": "tsc -p ./packages/core",
