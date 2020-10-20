@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // API CLIENT
 // listDashboardsCall(...params) = framents => {
 
@@ -47,22 +48,19 @@ import path from "path";
 
 class FileService {
   static createClientApis(
-    schema: string[],
-    resolvers: string[]
+    classes: any[],
+    resolvers: any[]
   ): { api: string; methods: string[] }[] {
-    console.log(schema, resolvers);
+    console.log(classes, resolvers);
     return [{ api: "user", methods: ["dasda"] }];
   }
 
-  static createSchemma(classes: string[], resolvers: string[]): string[] {
+  static createSchemma(classes: unknown[], resolvers: unknown[]): string[] {
     console.log(classes, resolvers);
     return ["", ""];
   }
 
-  static createResolvers(
-    classes: { methods: string; className: string; importName: string }[],
-    resolvers: string[]
-  ): string[] {
+  static createResolvers(classes: any[], resolvers: any[]): string[] {
     console.log(classes, resolvers);
     const imports: string[] = [];
     imports.push(`import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date';
@@ -71,7 +69,7 @@ class FileService {
       `);
 
     classes.forEach((cls) => {
-      if (cls.methods) {
+      if (cls["methods"]) {
         imports.push(`import ${cls.className} from '../../${cls.importName}';`);
       }
     });
@@ -79,8 +77,8 @@ class FileService {
   }
 
   static generateFiles(
-    queries: string[],
-    types: string[],
+    queries: unknown[],
+    types: unknown[],
     gqlPath: string,
     clientPath?: string
   ): void {
