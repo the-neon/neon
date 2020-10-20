@@ -1,5 +1,4 @@
 import PostgresDB from "./index";
-// const { Query } = jest.requireActual("pg");
 
 jest.mock("pg", () => {
   const mockClient = {
@@ -26,7 +25,7 @@ jest.mock("pg", () => {
 });
 
 describe("PostgresDB", () => {
-  let db: PostgresDB;
+  let db = new PostgresDB("");
   beforeEach(() => {
     db = new PostgresDB("");
   });
@@ -70,10 +69,7 @@ describe("PostgresDB", () => {
       "SELECT to_json(tmp.*) as item FROM (SELECT * FROM test_table WHERE id in ($1,$2) WHERE first_filter=$3) as tmp";
     const result = (await db.getByIds("test_table", ["123", "567"], {
       firstFilter: "234",
-    })) as {
-      args;
-      query;
-    }[];
+    })) as { args; query }[];
 
     expect(result[0].query).toBe(expQery);
     expect(["123", "567", "234"]).toEqual(result[0].args);
@@ -85,10 +81,7 @@ describe("PostgresDB", () => {
     const result = (await db.getByIds("test_table", ["123", "567"], {
       mainFilter: "234",
       secondFilter: "888",
-    })) as {
-      args;
-      query;
-    }[];
+    })) as { args; query }[];
 
     expect(result[0].query).toBe(expQery);
     expect(["123", "567", "234", "888"]).toEqual(result[0].args);

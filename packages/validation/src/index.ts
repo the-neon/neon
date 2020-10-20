@@ -27,6 +27,7 @@ export function Validate(
 
     const params = fnString
       .replace(/^async /, "")
+      .replace(/^function /, "")
       .replace(`${propertyKey}(`, "")
       .replace(/\).*/, "")
       .split("\n")[0]
