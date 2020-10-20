@@ -93,9 +93,14 @@ class FileService {
     writeFileSync(resolversPath, resolvers.join("\n"));
 
     if (clientPath) {
+      const apipath = path.resolve(clientPath);
+      if (!existsSync(apipath)) {
+        mkdirSync(apipath);
+      }
+
       const clientApis = FileService.createClientApis(queries, types);
       for (const clientApi of clientApis) {
-        const apiPath = path.resolve(genpath, `${clientApi.api}.ts`);
+        const apiPath = path.resolve(apipath, `${clientApi.api}.ts`);
         writeFileSync(apiPath, schema.join("\n"));
       }
     }
