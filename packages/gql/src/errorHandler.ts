@@ -23,6 +23,9 @@ const errorHandler = (ex: GraphQLError): Error => {
       return new AuthenticationError(originalErrorMessage);
     case "InputError": {
       const errors = ex.originalError?.["errors"];
+      if (!errors) {
+        return new UserInputError(originalErrorMessage, { severity: "error" });
+      }
       return new UserInputError(originalErrorMessage, {
         inputs: Object.keys(errors).map((key) => ({
           field: key,
