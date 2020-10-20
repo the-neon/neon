@@ -9,12 +9,12 @@ describe("schema generator", () => {
     const sourceFileMutation = createSourceFile(
       "nameAPI.ts",
       `class Name {
-                @Post
-                createUser(): Promise<User> {}
+          @Post
+          createUser(): Promise<User> {}
 
-                @Get
-                getUsers(): Promise<User[]> {}
-            }`,
+          @Get
+          getUsers(): Promise<User[]> {}
+      }`,
       ScriptTarget.ESNext,
       true,
       ScriptKind.TS
@@ -25,8 +25,8 @@ describe("schema generator", () => {
     const sourceFileModel = createSourceFile(
       "userModel.ts",
       `interface User {
-                name: string;
-            }`,
+        name: string;
+      }`,
       ScriptTarget.ESNext,
       true,
       ScriptKind.TS
