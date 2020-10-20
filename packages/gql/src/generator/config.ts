@@ -7,10 +7,12 @@ const configFiles = [".neonrc"];
 const defaults = {
   outDir: "./generated",
   inputDirs: ["."],
+  outApiClient: "./generated",
 };
 
 const respolveConfig = (): {
   outDir: string;
+  outApiClient: string;
   inputDirs: string[];
 } => {
   let override = defaults;
