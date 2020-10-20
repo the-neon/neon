@@ -54,12 +54,16 @@ class FileService {
     return [{ api: "user", methods: ["dasda"] }];
   }
 
-  static createSchemma(schema: string[], resolvers: string[]): string[] {
-    console.log(schema, resolvers);
+  static createSchemma(classes: string[], resolvers: string[]): string[] {
+    console.log(classes, resolvers);
     return ["", ""];
   }
 
-  static createResolvers(classes: any[], resolvers: string[]): string[] {
+  static createResolvers(
+    classes: { methods: string; className: string; importName: string }[],
+    resolvers: string[]
+  ): string[] {
+    console.log(classes, resolvers);
     const imports: string[] = [];
     imports.push(`import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date';
       import GraphQLJSON from 'graphql-type-json'
