@@ -5,10 +5,23 @@
   "files": [],
   "include": [],
   "references": [
-    { "path": "./packages/core" },
-    { "path": "./packages/gql" },
-    { "path": "./packages/pg" },
-    { "path": "./packages/dynamodb" },
-    { "path": "./packages/mysql" }
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/validation"
+    },
+    {
+      "path": "./packages/gql"
+    },
+    {
+      "path": "./packages/pg"
+    },
+    {
+      "path": "./packages/dynamodb"
+    },
+    {
+      "path": "./packages/mysql"
+    }
   ]
 }
