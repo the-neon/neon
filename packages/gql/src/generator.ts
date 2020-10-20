@@ -249,7 +249,6 @@ const delint = (sourceFile: SourceFile) => {
                 paramType = BuiltinType.Float;
               } else {
                 const typeName = param.type.typeName.escapedText;
-
                 switch (typeName) {
                   case "Date":
                     paramType = BuiltinType.DateTime;
