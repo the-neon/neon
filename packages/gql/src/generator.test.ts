@@ -1,5 +1,5 @@
 import { createSourceFile, ScriptKind, ScriptTarget } from "typescript";
-import { Delinter } from "./generator/delinter";
+import Delinter from "./generator/Delinter";
 
 describe("schema generator", () => {
   const delinter = new Delinter();
