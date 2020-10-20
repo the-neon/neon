@@ -5,14 +5,14 @@ describe("Validator", () => {
   const validEmail = "stojce@me.com";
   const invalidEmail = "stojce@com";
   let descriptor = {
-    value: (arg) => {
+    value: function (arg) {
       return arg;
     },
   };
 
   beforeEach(() => {
     descriptor = {
-      value: (arg) => {
+      value: function (arg) {
         return arg;
       },
     };
