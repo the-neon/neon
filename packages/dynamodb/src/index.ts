@@ -47,13 +47,7 @@ class DynamoDb {
       params.FilterExpression = expression;
       params.ExpressionAttributeValues = expressionValues;
     }
-
-    console.log("params", params);
-
     const prom = await this.dbClient.scan(params).promise();
-
-    console.log("prom", prom);
-
     return prom;
   }
 

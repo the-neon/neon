@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // API CLIENT
 // listDashboardsCall(...params) = framents => {
@@ -6,93 +7,137 @@ import { mkdirSync, writeFileSync } from "fs";
 import { existsSync } from "fs";
 import path from "path";
 
-//   const defSelector = `id
-//   name
-//   definition`
-
-//     `query listDashboards(@tenantId, @userId) {
-//       ${defSelector}
-//       ${selector}
-//   }
-//   `, params)
-// }
-
-// API CLIENT
-
-// CONSTEXT
-
-// gql`
-//     fragment CommentsPageComment on Comment {
-//       id
-//       postedBy {
-//         login
-//         html_url
-//       }
-//       createdAt
-//       content
-//     }
-//   `
-
-// const fragmnet = `thenaht {
-//   owner {
-//     id
-//     name
-//     address
-//   }
-//   location {
-//     lat
-//   }
-// }, `
-
-// listDashboards(tenantId , x)(framents)
-
 class FileService {
+  // tabstop
+  private static ts = "  ";
+
+  private static readonly GQL_CLIENT = `const apiCall = ({ query, variables, fragment }) => {
+    let fragmentStr = '';
+    if (fragment) {
+      fragmentStr = Object.keys(fragment).reduce((agg, val) => {
+        agg += (val + ' {\n' + fragment[val].join('\n') + '\n}\n');
+        return agg;
+      }, '');
+    }
+    return API.graphql({ query: gql\`\${query.replace('...fragment', fragmentStr)}\`, variables, authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS });
+  }
+  `;
+
+  static createReqFields(query, types) {
+    const resp: string[] = [];
+    if (query.responseType !== "JSON") {
+      const type = types.get(
+        query.responseType.replace("[", "").replace("]", "")
+      );
+      type?.members?.forEach((member) => {
+        if (member.scalar) {
+          resp.push(member.name);
+        }
+      });
+    }
+    return resp.join("\n\t\t\t");
+  }
+
+  private static createClientMethods(query, type, types) {
+    const queryLines: string[] = [];
+    const paramsDef = query.params
+      .map((p) => `$${p.paramName}: ${p.paramType}${p.optional ? "" : "!"}`)
+      .join(", ");
+    const inParams = query.params
+      .map((p) => `${p.paramName}: $${p.paramName}`)
+      .join(", ");
+    const funcParams = query.params.map((p) => `${p.paramName}`).join(", ");
+    const respDef = FileService.createReqFields(query, types);
+
+    /*
+const LIST_TENANTS_QUERY = `
+  query listTenants {
+    listTenants {
+      id
+      name
+      email
+      address
+      phone
+      website
+      ...fragment
+    }
+  }`;
+
+export const fetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS_QUERY, fragment });
+
+    */
+
+    const queryName = query.methodName.toUpperCase() + "_QUERY";
+
+    queryLines.push("");
+    queryLines.push(`const ${queryName} = gql\``);
+    queryLines.push(
+      `${FileService.ts}${type} ${query.methodName}(${paramsDef}) {`
+    );
+    queryLines.push(
+      `${FileService.ts}${FileService.ts}${query.methodName}(${inParams}) {`
+    );
+    queryLines.push(
+      `${FileService.ts}${FileService.ts}${FileService.ts}${respDef}`
+    );
+    queryLines.push(`${FileService.ts}${FileService.ts}}`);
+    queryLines.push(`${FileService.ts}}\`;`);
+    queryLines.push("");
+    //               export const ddddfetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS_QUERY, fragment });
+    queryLines.push(
+      `export const ${query.methodName} = async (${
+        funcParams ? "{" + funcParams + "}, " : ""
+      }fragments = null) => apiCall({ query: ${queryName}, variables: {${funcParams}} ,fragment });`
+    );
+    queryLines.push("");
+
+    return queryLines.join("\n");
+  }
+
   static createClientApis(
-    classes: any[],
-    resolvers: any[]
-  ): { api: string; methods: string[] }[] {
-    console.log(classes, resolvers);
-    return [{ api: "user", methods: ["dasda"] }];
-  }
+    queries: any[],
+    mutations: any[],
+    types
+  ): Map<string, string> {
+    const apis: Map<string, string> = new Map();
 
-  static createSchemma(classes: unknown[], resolvers: unknown[]): string[] {
-    console.log(classes, resolvers);
-    return ["", ""];
-  }
+    const lines: string[] = [];
+    lines.push("import { API, graphqlOperation } from 'aws-amplify';");
+    lines.push("import gql from 'graphql-tag';");
+    lines.push("");
 
-  static createResolvers(classes: any[], resolvers: any[]): string[] {
-    console.log(classes, resolvers);
-    const imports: string[] = [];
-    imports.push(`import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date';
-      import GraphQLJSON from 'graphql-type-json'
-      import { DataSource } from 'apollo-datasource';
-      `);
-
-    classes.forEach((cls) => {
-      if (cls["methods"]) {
-        imports.push(`import ${cls.className} from '../../${cls.importName}';`);
+    for (const query of queries) {
+      let api = apis.get(query.instance);
+      if (!api) {
+        api = lines.join("\n");
       }
-    });
-    return imports;
+      api += FileService.createClientMethods(query, "query", types);
+      apis.set(query.instance, api);
+    }
+
+    for (const mutation of mutations) {
+      let api = apis.get(mutation.instance);
+      if (!api) {
+        api = lines.join("\n");
+      }
+      api += FileService.createClientMethods(mutation, "mutation", types);
+      apis.set(mutation.instance, api);
+    }
+
+    return apis;
   }
 
   static generateFiles(
     queries: unknown[],
-    types: unknown[],
+    mutations: unknown[],
+    types: Map<string, unknown>,
     gqlPath: string,
     clientPath?: string
   ): void {
-    const genpath = path.resolve(gqlPath);
-    if (!existsSync(genpath)) {
-      mkdirSync(genpath);
-    }
-
-    const schema = FileService.createSchemma(queries, types);
-    const resolvers = FileService.createResolvers(queries, types);
-    const schemaPath = path.resolve(genpath, "schema.ts");
-    const resolversPath = path.resolve(genpath, "resolvers.ts");
-    writeFileSync(schemaPath, schema.join("\n"));
-    writeFileSync(resolversPath, resolvers.join("\n"));
+    // const genpath = path.resolve(gqlPath);
+    // if (!existsSync(genpath)) {
+    //   mkdirSync(genpath);
+    // }
 
     if (clientPath) {
       const apipath = path.resolve(clientPath);
@@ -100,11 +145,18 @@ class FileService {
         mkdirSync(apipath);
       }
 
-      const clientApis = FileService.createClientApis(queries, types);
-      for (const clientApi of clientApis) {
-        const apiPath = path.resolve(apipath, `${clientApi.api}.ts`);
-        writeFileSync(apiPath, schema.join("\n"));
-      }
+      const gqlClientPath = path.resolve(apipath, `gqlClient.js`);
+      writeFileSync(gqlClientPath, FileService.GQL_CLIENT);
+
+      const clientApis = FileService.createClientApis(
+        queries,
+        mutations,
+        types
+      );
+      clientApis.forEach((val, k) => {
+        const apiPath = path.resolve(apipath, `${k}.js`);
+        writeFileSync(apiPath, val);
+      });
     }
   }
 }
