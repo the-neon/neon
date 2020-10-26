@@ -11,15 +11,25 @@ class FileService {
   // tabstop
   private static ts = "  ";
 
-  private static readonly GQL_CLIENT = `const apiCall = ({ query, variables, fragment }) => {
+  private static readonly GQL_CLIENT = `
+  import { API } from "aws-amplify";
+  import gql from "graphql-tag";
+
+  export const apiCall = ({ query, variables, fragment }) => {
     let fragmentStr = '';
     if (fragment) {
       fragmentStr = Object.keys(fragment).reduce((agg, val) => {
-        agg += (val + ' {\n' + fragment[val].join('\n') + '\n}\n');
+        agg += (val + ' {\\n' + fragment[val].join('\\n') + '\\n}');
         return agg;
       }, '');
     }
-    return API.graphql({ query: gql\`\${query.replace('...fragment', fragmentStr)}\`, variables, authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS });
+
+    try {
+      const response = API.graphql({ query: gql\`\${query.replace('...fragment', fragmentStr)}\`, variables });
+      return { success: true, data: Object.values(response.data)[0] };
+    } catch (e) {
+      return e.errors?.[0] || { success: false, message: 'Unknown error' };
+    }
   }
   `;
 
@@ -87,7 +97,7 @@ export const fetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS
     queryLines.push(
       `export const ${query.methodName} = async (${
         funcParams ? "{" + funcParams + "}, " : ""
-      }fragments = null) => apiCall({ query: ${queryName}, variables: {${funcParams}} ,fragment });`
+      }fragments = null) => apiCall({ query: ${queryName}, variables: {${funcParams}}, fragments });`
     );
     queryLines.push("");
 
@@ -102,8 +112,9 @@ export const fetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS
     const apis: Map<string, string> = new Map();
 
     const lines: string[] = [];
-    lines.push("import { API, graphqlOperation } from 'aws-amplify';");
+
     lines.push("import gql from 'graphql-tag';");
+    lines.push("import { apiCall } from 'gqlClient';");
     lines.push("");
 
     for (const query of queries) {
