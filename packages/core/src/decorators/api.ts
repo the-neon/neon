@@ -1,10 +1,10 @@
 import { Action } from "../enums";
 
 /* eslint-disable */
-export function Post(target: any, name: string) {}
-export function Put(target: any, name: string) {}
-export function Delete(target: any, name: string) {}
-export function Get(target: any, name: string) {}
+export function Post(target: any, name: string) { }
+export function Put(target: any, name: string) { }
+export function Delete(target: any, name: string) { }
+export function Get(target: any, name: string) { }
 
 /**
  * Method decorator for auth
@@ -21,7 +21,7 @@ export function Auth(roles?: any[] | string, action?: Action | Action[]) {
     target: any,
     propertyKey: string,
     descriptor: PropertyDescriptor
-  ) => {};
+  ) => { };
 }
 
 /**
@@ -34,4 +34,4 @@ export function key(
   target: any,
   propertyKey: string | symbol,
   parameterIndex: number
-) {}
+) { }

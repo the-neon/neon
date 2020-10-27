@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
 "use strict";
-require("../packages/gql/lib/generator");
+require("../packages/gql/lib/generator/index");

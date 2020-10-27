@@ -21,7 +21,8 @@ import {
 
 import chalk from "chalk";
 
-import { respolveConfig } from "./config";
+import { resolveConfig } from "./config";
+import FileService from "./FileService";
 
 enum BuiltinType {
   String = "String",
@@ -497,7 +498,7 @@ const delint = (sourceFile: SourceFile) => {
   delintNode(sourceFile);
 };
 
-const config = respolveConfig();
+const config = resolveConfig();
 
 config.inputDirs.forEach((directory) => {
   console.log("🔨 Parsing", directory);
@@ -552,9 +553,9 @@ createInputs(queries);
 createInputs(mutations);
 
 imports.push(`import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date';
-import GraphQLJSON from 'graphql-type-json'
-import { DataSource } from 'apollo-datasource';
-`);
+  import GraphQLJSON from 'graphql-type-json'
+  import { DataSource } from 'apollo-datasource';
+  `);
 
 classes.forEach((cls) => {
   if (cls.methods) {
@@ -567,31 +568,31 @@ const lines: string[] = [];
 lines.push("/* eslint-disable max-len */");
 imports.forEach((imp) => lines.push(imp));
 lines.push(`
-
-class GqlDataSource extends DataSource {
-  private apiType: any;
-  private instance: any;
-  private appContext: any;
-
-  constructor(apiType) {
-    super();
-    this.apiType = apiType;
-  }
-
-  initialize?(config) {
-    this.instance = null;
-    this.appContext = config?.context?.appContext;
-  }
-
-  call(method, ...args) {
-    if (!this.instance) {
-      this.instance = new this.apiType(this.appContext);
+  
+  class GqlDataSource extends DataSource {
+    private apiType: any;
+    private instance: any;
+    private appContext: any;
+  
+    constructor(apiType) {
+      super();
+      this.apiType = apiType;
     }
-    return this.instance?.[method](...args);
+  
+    initialize?(config) {
+      this.instance = null;
+      this.appContext = config?.context?.appContext;
+    }
+  
+    call(method, ...args) {
+      if (!this.instance) {
+        this.instance = new this.apiType(this.appContext);
+      }
+      return this.instance?.[method](...args);
+    }
   }
-}
-
-`);
+  
+  `);
 lines.push(`export const APISources = {`);
 
 let tbs = "  ";
@@ -641,24 +642,24 @@ tbs = "";
 lines.push(`${tbs}},`);
 
 lines.push(`
-  Date: GraphQLDate,
-  DateTime: GraphQLDateTime,
-  JSON: GraphQLJSON,
-};
-`);
+    Date: GraphQLDate,
+    DateTime: GraphQLDateTime,
+    JSON: GraphQLJSON,
+  };
+  `);
 
 const schema: string[] = [];
 
 schema.push(`
-import { gql } from 'apollo-server-lambda';
-
-export const typeDefs = gql\`
-directive @auth(roles: String) on FIELD_DEFINITION
-
-scalar JSON
-scalar Date
-scalar DateTime
-`);
+  import { gql } from 'apollo-server-lambda';
+  
+  export const typeDefs = gql\`
+  directive @auth(roles: String) on FIELD_DEFINITION
+  
+  scalar JSON
+  scalar Date
+  scalar DateTime
+  `);
 
 enums.forEach((en) => {
   schema.push(`${tbs}enum ${en.name} {`);
@@ -759,3 +760,13 @@ const resolverspath = path.resolve(genpath, "resolvers.ts");
 
 writeFileSync(schemapath, schema.join("\n"));
 writeFileSync(resolverspath, lines.join("\n"));
+
+if (config.outApiClient) {
+  FileService.generateFiles(
+    queries,
+    mutations,
+    inter,
+    genpath,
+    config.outApiClient
+  );
+}

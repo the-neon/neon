@@ -61,7 +61,6 @@ class MySqlDb {
       console.log("execute query");
 
       if (queryType === QueryTypes.SELECT) {
-        console.log(`execute select: ${JSON.stringify(rows)}`);
         const results = rows.map((row) => this.castRow(row));
         return results;
       }
