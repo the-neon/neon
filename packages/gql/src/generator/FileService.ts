@@ -12,25 +12,25 @@ class FileService {
   private static ts = "  ";
 
   private static readonly GQL_CLIENT = `
-  import { API } from "aws-amplify";
-  import gql from "graphql-tag";
+import { API } from "aws-amplify";
+import gql from "graphql-tag";
 
-  export const apiCall = async ({ query, variables, fragment }) => {
-    let fragmentStr = '';
-    if (fragment) {
-      fragmentStr = Object.keys(fragment).reduce((agg, val) => {
-        agg += (val + ' {\\n' + fragment[val].join('\\n') + '\\n}');
-        return agg;
-      }, '');
-    }
-
-    try {
-      const response = await API.graphql({ query: gql\`\${query.replace('...fragments', fragmentStr)}\`, variables });
-      return { success: true, data: Object.values(response.data)[0] };
-    } catch (e) {
-      return e.errors?.[0] || { success: false, message: 'Unknown error' };
-    }
+export const apiCall = async ({ query, variables, fragments }) => {
+  let fragmentStr = '';
+  if (fragments) {
+    fragmentStr = Object.keys(fragments).reduce((agg, val) => {
+      agg += (val + ' {\\n' + fragments[val].join('\\n') + '\\n}');
+      return agg;
+    }, '');
   }
+
+  try {
+    const response = await API.graphql({ query: gql\`\${query.replace('...fragments', fragmentStr)}\`, variables });
+    return { success: true, data: Object.values(response.data)[0] };
+  } catch (e) {
+    return e.errors?.[0] || { success: false, message: 'Unknown error' };
+  }
+}
   `;
 
   static createReqFields(query, types) {
@@ -99,7 +99,8 @@ class FileService {
     queryLines.push("");
 
     queryLines.push(
-      `export const ${query.methodName} = async (${funcParams ? "{" + funcParams + "}, " : ""
+      `export const ${query.methodName} = async (${
+        funcParams ? "{" + funcParams + "}, " : ""
       }${fragmentsIn}) => apiCall({ query: ${queryName}, variables: {${funcParams}}${fragmentsOut}});`
     );
     queryLines.push("");
