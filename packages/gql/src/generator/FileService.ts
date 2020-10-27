@@ -50,57 +50,58 @@ class FileService {
 
   private static createClientMethods(query, type, types) {
     const queryLines: string[] = [];
-    const paramsDef = query.params
-      .map((p) => `$${p.paramName}: ${p.paramType}${p.optional ? "" : "!"}`)
-      .join(", ");
-    const inParams = query.params
-      .map((p) => `${p.paramName}: $${p.paramName}`)
-      .join(", ");
+
+    let inParams = "";
+    let paramsDef = "";
+
+    if (query.params) {
+      paramsDef = query.params
+        .map((p) => `$${p.paramName}: ${p.paramType}${p.optional ? "" : "!"}`)
+        .join(", ");
+      inParams = query.params
+        .map((p) => `${p.paramName}: $${p.paramName}`)
+        .join(", ");
+      paramsDef = `(${paramsDef})`;
+      inParams = `(${inParams})`;
+    }
+
     const funcParams = query.params.map((p) => `${p.paramName}`).join(", ");
     const respDef = FileService.createReqFields(query, types);
-
-    /*
-const LIST_TENANTS_QUERY = `
-  query listTenants {
-    listTenants {
-      id
-      name
-      email
-      address
-      phone
-      website
-      ...fragment
-    }
-  }`;
-
-export const fetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS_QUERY, fragment });
-
-    */
 
     const queryName = query.methodName.toUpperCase() + "_QUERY";
 
     queryLines.push("");
     queryLines.push(`const ${queryName} = \``);
     queryLines.push(
-      `${FileService.ts}${type} ${query.methodName}(${paramsDef}) {`
+      `${FileService.ts}${type} ${query.methodName}${paramsDef} {`
     );
     queryLines.push(
-      `${FileService.ts}${FileService.ts}${query.methodName}(${inParams}) {`
+      `${FileService.ts}${FileService.ts}${query.methodName}${inParams} {`
     );
     queryLines.push(
       `${FileService.ts}${FileService.ts}${FileService.ts}${respDef}`
     );
-    queryLines.push(
-      `${FileService.ts}${FileService.ts}${FileService.ts}...fragments`
-    );
+
+    let fragmentsIn = "";
+    let fragmentsOut = "";
+
+    // TODO: check if fragments can be defined,; i.e. have compex type in response
+    if (respDef) {
+      queryLines.push(
+        `${FileService.ts}${FileService.ts}${FileService.ts}...fragments`
+      );
+      fragmentsIn = "fragments = null";
+      fragmentsOut = ", fragments ";
+    }
+
     queryLines.push(`${FileService.ts}${FileService.ts}}`);
     queryLines.push(`${FileService.ts}}\`;`);
     queryLines.push("");
-    //               export const ddddfetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS_QUERY, fragment });
+
     queryLines.push(
       `export const ${query.methodName} = async (${
         funcParams ? "{" + funcParams + "}, " : ""
-      }fragments = null) => apiCall({ query: ${queryName}, variables: {${funcParams}}, fragments });`
+      }${fragmentsIn}) => apiCall({ query: ${queryName}, variables: {${funcParams}}${fragmentsOut}});`
     );
     queryLines.push("");
 
@@ -147,11 +148,6 @@ export const fetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS
     gqlPath: string,
     clientPath?: string
   ): void {
-    // const genpath = path.resolve(gqlPath);
-    // if (!existsSync(genpath)) {
-    //   mkdirSync(genpath);
-    // }
-
     if (clientPath) {
       const apipath = path.resolve(clientPath);
       if (!existsSync(apipath)) {
