@@ -80,7 +80,7 @@ export const fetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS
     const queryName = query.methodName.toUpperCase() + "_QUERY";
 
     queryLines.push("");
-    queryLines.push(`const ${queryName} = gql\``);
+    queryLines.push(`const ${queryName} = \``);
     queryLines.push(
       `${FileService.ts}${type} ${query.methodName}(${paramsDef}) {`
     );
@@ -89,6 +89,9 @@ export const fetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS
     );
     queryLines.push(
       `${FileService.ts}${FileService.ts}${FileService.ts}${respDef}`
+    );
+    queryLines.push(
+      `${FileService.ts}${FileService.ts}${FileService.ts}...fragments`
     );
     queryLines.push(`${FileService.ts}${FileService.ts}}`);
     queryLines.push(`${FileService.ts}}\`;`);
