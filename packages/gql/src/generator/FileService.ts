@@ -25,7 +25,7 @@ class FileService {
     }
 
     try {
-      const response = API.graphql({ query: gql\`\${query.replace('...fragments', fragmentStr)}\`, variables });
+      const response = await API.graphql({ query: gql\`\${query.replace('...fragments', fragmentStr)}\`, variables });
       return { success: true, data: Object.values(response.data)[0] };
     } catch (e) {
       return e.errors?.[0] || { success: false, message: 'Unknown error' };
@@ -54,7 +54,7 @@ class FileService {
     let inParams = "";
     let paramsDef = "";
 
-    if (query.params) {
+    if (query.params?.length > 0) {
       paramsDef = query.params
         .map((p) => `$${p.paramName}: ${p.paramType}${p.optional ? "" : "!"}`)
         .join(", ");
@@ -117,7 +117,7 @@ class FileService {
 
     const lines: string[] = [];
 
-    lines.push("import { apiCall } from 'gqlClient';");
+    lines.push("import { apiCall } from './gqlClient';");
     lines.push("");
 
     for (const query of queries) {
