@@ -618,8 +618,7 @@ queries.forEach((q) => {
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
       ", "
-    )} }, { dataSources }) => dataSources.${q.instance}.call('${
-      q.methodName
+    )} }, { dataSources }) => dataSources.${q.instance}.call('${q.methodName
     }', ${prms.join(", ")}),`
   );
 });
@@ -634,8 +633,7 @@ mutations.forEach((q) => {
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
       ", "
-    )} }, { dataSources }) => dataSources.${q.instance}.call('${
-      q.methodName
+    )} }, { dataSources }) => dataSources.${q.instance}.call('${q.methodName
     }', ${prms.join(", ")}),`
   );
 });
@@ -693,8 +691,7 @@ inter.forEach((ifc) => {
   }
 
   schema.push(
-    `${tbs}${ifc.kind || "type"} ${ifc.name}${
-      ifc.implements ? " implements " + ifc.implements : ""
+    `${tbs}${ifc.kind || "type"} ${ifc.name}${ifc.implements ? " implements " + ifc.implements : ""
     } {`
   );
   tbs = "  ";
