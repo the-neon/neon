@@ -116,7 +116,6 @@ export const fetchAllTenants = async (fragment) => apiCall({ query: LIST_TENANTS
 
     const lines: string[] = [];
 
-    lines.push("import gql from 'graphql-tag';");
     lines.push("import { apiCall } from 'gqlClient';");
     lines.push("");
 
