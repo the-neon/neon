@@ -9,7 +9,7 @@ const defaults = {
   inputDirs: ["."],
 };
 
-const respolveConfig = (): {
+const resolveConfig = (): {
   outDir: string;
   inputDirs: string[];
 } => {
@@ -25,4 +25,4 @@ const respolveConfig = (): {
   return { ...defaults, ...override };
 };
 
-export { respolveConfig };
+export { resolveConfig };

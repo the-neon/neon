@@ -10,7 +10,7 @@ const defaults = {
   outApiClient: "./generated",
 };
 
-const respolveConfig = (): {
+const resolveConfig = (): {
   outDir: string;
   outApiClient: string;
   inputDirs: string[];
@@ -27,4 +27,4 @@ const respolveConfig = (): {
   return { ...defaults, ...override };
 };
 
-export { respolveConfig };
+export { resolveConfig };

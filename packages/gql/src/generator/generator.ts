@@ -5,12 +5,12 @@ import chalk from "chalk";
 import { createSourceFile, ScriptKind, ScriptTarget } from "typescript";
 import { readdirSync, readFileSync, existsSync } from "fs";
 
-import { respolveConfig } from "./config";
+import { resolveConfig } from "./config";
 // import FileService from "./FileService";
 import Delinter from "./Delinter";
 import { exit } from "process";
 
-const config = respolveConfig();
+const config = resolveConfig();
 
 if (!config) {
   exit();

@@ -21,7 +21,7 @@ import {
 
 import chalk from "chalk";
 
-import { respolveConfig } from "./config";
+import { resolveConfig } from "./config";
 import FileService from "./FileService";
 
 enum BuiltinType {
@@ -498,7 +498,7 @@ const delint = (sourceFile: SourceFile) => {
   delintNode(sourceFile);
 };
 
-const config = respolveConfig();
+const config = resolveConfig();
 
 config.inputDirs.forEach((directory) => {
   console.log("🔨 Parsing", directory);
