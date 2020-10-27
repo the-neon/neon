@@ -25,7 +25,7 @@ class FileService {
     }
 
     try {
-      const response = API.graphql({ query: gql\`\${query.replace('...fragment', fragmentStr)}\`, variables });
+      const response = API.graphql({ query: gql\`\${query.replace('...fragments', fragmentStr)}\`, variables });
       return { success: true, data: Object.values(response.data)[0] };
     } catch (e) {
       return e.errors?.[0] || { success: false, message: 'Unknown error' };
