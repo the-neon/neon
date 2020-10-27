@@ -15,7 +15,7 @@ class FileService {
   import { API } from "aws-amplify";
   import gql from "graphql-tag";
 
-  export const apiCall = ({ query, variables, fragment }) => {
+  export const apiCall = async ({ query, variables, fragment }) => {
     let fragmentStr = '';
     if (fragment) {
       fragmentStr = Object.keys(fragment).reduce((agg, val) => {
@@ -99,8 +99,7 @@ class FileService {
     queryLines.push("");
 
     queryLines.push(
-      `export const ${query.methodName} = async (${
-        funcParams ? "{" + funcParams + "}, " : ""
+      `export const ${query.methodName} = async (${funcParams ? "{" + funcParams + "}, " : ""
       }${fragmentsIn}) => apiCall({ query: ${queryName}, variables: {${funcParams}}${fragmentsOut}});`
     );
     queryLines.push("");
