@@ -23,16 +23,7 @@ import chalk from "chalk";
 
 import { resolveConfig } from "./config";
 import FileService from "./FileService";
-
-enum BuiltinType {
-  String = "String",
-  Boolean = "Boolean",
-  Float = "Float",
-  Int = "Int",
-  Date = "Date",
-  DateTime = "DateTime",
-  Json = "JSON",
-}
+import Mapper, { BuiltinType } from "./Mapper";
 
 interface TypeProp {
   name: string;
@@ -214,67 +205,15 @@ const delint = (sourceFile: SourceFile) => {
           let paramType = "";
           const scalar = true;
 
-          if (param.decorators) {
-            for (const decorator of param.decorators) {
-              if (decorator["expression"]["escapedText"] === "key") {
-                paramType = "ID";
-              }
-            }
-          }
-
-          if (!paramType) {
-            try {
-              if (!param.type) {
-                paramType = "JSON";
-              } else if (param.type.kind === SyntaxKind.ArrayType) {
-                if (param["type"].elementType.kind === SyntaxKind.AnyKeyword) {
-                  paramType = BuiltinType.Json;
-                } else if (
-                  param["type"].elementType.typeName.escapedText === "integer"
-                ) {
-                  paramType = `[${BuiltinType.Int}]`;
-                } else if (
-                  param["type"].elementType.typeName.escapedText === "float"
-                ) {
-                  paramType = `[${BuiltinType.Float}]`;
-                } else {
-                  paramType = `[${param["type"].elementType.typeName.escapedText}]`;
-                }
-              } else if (param.type.kind === SyntaxKind.AnyKeyword) {
-                paramType = BuiltinType.Json;
-              } else if (param.type.kind === SyntaxKind.BooleanKeyword) {
-                paramType = BuiltinType.Boolean;
-              } else if (param.type.kind === SyntaxKind.StringKeyword) {
-                paramType = BuiltinType.String;
-              } else if (param.type.kind === SyntaxKind.NumberKeyword) {
-                paramType = BuiltinType.Float;
-              } else {
-                const typeName = param.type.typeName.escapedText;
-                switch (typeName) {
-                  case "Date":
-                    paramType = BuiltinType.DateTime;
-                    break;
-                  case "integer":
-                    paramType = BuiltinType.Int;
-                    break;
-                  case "float":
-                    paramType = BuiltinType.Float;
-                    break;
-                  default:
-                    console.log(
-                      "Defaulting type to JSON, ",
-                      param.type.kind,
-                      typeName
-                    );
-                    paramType = typeName || BuiltinType.Json;
-                    console.log("Defaluting type to JSON, ", param.type.kind);
-                    break;
-                }
-              }
-            } catch (ex) {
-              console.log(ex.message);
-              console.log(param.type);
-            }
+          if (
+            param.decorators &&
+            param.decorators.some(
+              (d) => d["expression"]["escapedText"] === "key"
+            )
+          ) {
+            paramType = "ID";
+          } else {
+            paramType = Mapper.mapType(param?.type);
           }
 
           params.push({
@@ -618,7 +557,8 @@ queries.forEach((q) => {
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
       ", "
-    )} }, { dataSources }) => dataSources.${q.instance}.call('${q.methodName
+    )} }, { dataSources }) => dataSources.${q.instance}.call('${
+      q.methodName
     }', ${prms.join(", ")}),`
   );
 });
@@ -633,7 +573,8 @@ mutations.forEach((q) => {
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
       ", "
-    )} }, { dataSources }) => dataSources.${q.instance}.call('${q.methodName
+    )} }, { dataSources }) => dataSources.${q.instance}.call('${
+      q.methodName
     }', ${prms.join(", ")}),`
   );
 });
@@ -691,7 +632,8 @@ inter.forEach((ifc) => {
   }
 
   schema.push(
-    `${tbs}${ifc.kind || "type"} ${ifc.name}${ifc.implements ? " implements " + ifc.implements : ""
+    `${tbs}${ifc.kind || "type"} ${ifc.name}${
+      ifc.implements ? " implements " + ifc.implements : ""
     } {`
   );
   tbs = "  ";
