@@ -99,7 +99,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
     queryLines.push("");
 
     queryLines.push(
-      `export const ${query.methodName} = async (${
+      `export const ${query.methodName}ApiCall = async (${
         funcParams ? "{" + funcParams + "}, " : ""
       }${fragmentsIn}) => apiCall({ query: ${queryName}, variables: {${funcParams}}${fragmentsOut}});`
     );

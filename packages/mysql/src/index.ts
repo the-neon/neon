@@ -58,8 +58,6 @@ class MySqlDb {
         transaction: this.transaction,
       })) as unknown[];
 
-      console.log("execute query");
-
       if (queryType === QueryTypes.SELECT) {
         const results = rows.map((row) => this.castRow(row));
         return results;
