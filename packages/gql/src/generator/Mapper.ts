@@ -29,7 +29,6 @@ class Mapper {
           // map recursively
           paramType = `[${Mapper.mapType(type.elementType)}]`;
         }
-        console.log("paramType", paramType);
       } else if (type.kind === SyntaxKind.AnyKeyword) {
         paramType = BuiltinType.Json;
       } else if (type.kind === SyntaxKind.BooleanKeyword) {
@@ -58,7 +57,6 @@ class Mapper {
       }
     } catch (ex) {
       console.log(ex.message);
-      console.log(type);
     }
     return paramType;
   }
