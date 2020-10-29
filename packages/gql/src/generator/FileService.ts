@@ -12,25 +12,25 @@ class FileService {
   private static ts = "  ";
 
   private static readonly GQL_CLIENT = `
-  import { API } from "aws-amplify";
-  import gql from "graphql-tag";
+import { API } from "aws-amplify";
+import gql from "graphql-tag";
 
-  export const apiCall = ({ query, variables, fragment }) => {
-    let fragmentStr = '';
-    if (fragment) {
-      fragmentStr = Object.keys(fragment).reduce((agg, val) => {
-        agg += (val + ' {\\n' + fragment[val].join('\\n') + '\\n}');
-        return agg;
-      }, '');
-    }
-
-    try {
-      const response = API.graphql({ query: gql\`\${query.replace('...fragments', fragmentStr)}\`, variables });
-      return { success: true, data: Object.values(response.data)[0] };
-    } catch (e) {
-      return e.errors?.[0] || { success: false, message: 'Unknown error' };
-    }
+export const apiCall = async ({ query, variables, fragments }) => {
+  let fragmentStr = '';
+  if (fragments) {
+    fragmentStr = Object.keys(fragments).reduce((agg, val) => {
+      agg += (val + ' {\\n' + fragments[val].join('\\n') + '\\n}');
+      return agg;
+    }, '');
   }
+
+  try {
+    const response = await API.graphql({ query: gql\`\${query.replace('...fragments', fragmentStr)}\`, variables });
+    return { success: true, data: Object.values(response.data)[0] };
+  } catch (e) {
+    return e.errors?.[0] || { success: false, message: 'Unknown error' };
+  }
+}
   `;
 
   static createReqFields(query, types) {
@@ -54,7 +54,7 @@ class FileService {
     let inParams = "";
     let paramsDef = "";
 
-    if (query.params) {
+    if (query.params?.length > 0) {
       paramsDef = query.params
         .map((p) => `$${p.paramName}: ${p.paramType}${p.optional ? "" : "!"}`)
         .join(", ");
@@ -99,7 +99,7 @@ class FileService {
     queryLines.push("");
 
     queryLines.push(
-      `export const ${query.methodName} = async (${
+      `export const ${query.methodName}ApiCall = async (${
         funcParams ? "{" + funcParams + "}, " : ""
       }${fragmentsIn}) => apiCall({ query: ${queryName}, variables: {${funcParams}}${fragmentsOut}});`
     );
@@ -117,7 +117,7 @@ class FileService {
 
     const lines: string[] = [];
 
-    lines.push("import { apiCall } from 'gqlClient';");
+    lines.push("import { apiCall } from './gqlClient';");
     lines.push("");
 
     for (const query of queries) {
