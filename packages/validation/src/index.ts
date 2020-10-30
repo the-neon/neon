@@ -126,3 +126,5 @@ export function Validate(
     };
   };
 }
+
+export * from "./Validator";
