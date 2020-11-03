@@ -1,10 +1,10 @@
-import { parse as parseUuid } from "uuid";
+import { parse as uuidParse } from "uuid";
 
 export class Valid {
   public static uuid(argValue: string): boolean {
     if (argValue) {
       try {
-        parseUuid(argValue);
+        uuidParse(argValue);
       } catch {
         return false;
       }
@@ -13,15 +13,31 @@ export class Valid {
   }
 
   public static notEmpty(argValue: string): boolean {
-    return (
-      (argValue &&
-        Object.prototype.hasOwnProperty.call(argValue, "length") &&
-        argValue.length > 0) ||
-      Object.keys(argValue).length > 0
+    return !(
+      // null
+      (
+        typeof argValue === "undefined" ||
+        argValue === null ||
+        // string
+        (typeof argValue === "string" && argValue.toString().length === 0) ||
+        // Array
+        (argValue.hasOwnProperty?.("length") && argValue.length === 0) ||
+        // Object
+        (typeof argValue === "object" && Object.keys(argValue).length === 0)
+      )
     );
   }
 
   public static email(email: string): boolean {
+    // do not test if no email is provided (use notEmpty for required fields)
+    if (
+      (typeof email === "string" && email.length === 0) ||
+      typeof email === "undefined" ||
+      email === null
+    ) {
+      return true;
+    }
+
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   }
