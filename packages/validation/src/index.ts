@@ -93,7 +93,9 @@ export function Validate(
               switch (validator) {
                 case Validator.email:
                   if (!Valid.email(argValue)) {
-                    validationErrors.push(`Invalid email address for '${key}`);
+                    validationErrors.push(
+                      `Invalid email address for '${key}' (${argValue})`
+                    );
                   }
                   break;
 

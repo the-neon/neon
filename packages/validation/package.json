@@ -1,7 +1,7 @@
 {
   "name": "@the-neon/validation",
   "main": "lib/index.js",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,6 +20,9 @@
   },
   "peerDependencies": {
     "@the-neon/core": "file:../core"
+  },
+  "dependencies": {
+    "uuid": "^8.3.1"
   },
   "author": "Stojce Slavkovski",
   "description": "Validation support for Neon"
