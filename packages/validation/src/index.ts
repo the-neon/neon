@@ -36,7 +36,7 @@ export function Validate(
 
     //wrapping the original method
     descriptor.value = function (...args: any[]) {
-      const validationErrors: string[] = [];
+      const validationErrors: { key?: string; message: string }[] = [];
 
       if (functions) {
         let fns: any[];
@@ -51,7 +51,7 @@ export function Validate(
             try {
               fn(args, this["context"]);
             } catch (ex) {
-              validationErrors.push(ex.message);
+              validationErrors.push({ message: ex.message });
             }
           }
         });
@@ -64,7 +64,7 @@ export function Validate(
             const { fn, args } = localFn();
             fn(params, args, arguments, this);
           } catch (ex) {
-            validationErrors.push(ex.message);
+            validationErrors.push({ message: ex.message });
           }
           return;
         }
@@ -87,32 +87,45 @@ export function Validate(
               try {
                 validator(argValue, this);
               } catch (ex) {
-                validationErrors.push(`'${key}' ${ex.message}`);
+                validationErrors.push({
+                  key,
+                  message: `'${key}' ${ex.message}`,
+                });
               }
             } else {
               switch (validator) {
                 case Validator.email:
                   if (!Valid.email(argValue)) {
-                    validationErrors.push(
-                      `Invalid email address for '${key}' (${argValue})`
-                    );
+                    validationErrors.push({
+                      key,
+                      message: `Invalid email address for '${key}' (${argValue})`,
+                    });
                   }
                   break;
 
                 case Validator.notEmpty:
                   if (!Valid.notEmpty(argValue)) {
-                    validationErrors.push(`'${key}'is required`);
+                    validationErrors.push({
+                      key,
+                      message: `'${key}'is required`,
+                    });
                   }
                   break;
 
                 case Validator.uuid:
                   if (!Valid.uuid(argValue)) {
-                    validationErrors.push(`'${key}'is not valid UUID`);
+                    validationErrors.push({
+                      key,
+                      message: `'${key}'is not valid UUID`,
+                    });
                   }
                   break;
 
                 default:
-                  validationErrors.push(`Invlid validation for '${key}'`);
+                  validationErrors.push({
+                    key,
+                    message: `Invlid validation for '${key}'`,
+                  });
                   break;
               }
             }
@@ -121,7 +134,9 @@ export function Validate(
       });
 
       if (validationErrors.length > 0) {
-        throw new Error(JSON.stringify(validationErrors));
+        throw new Error(
+          JSON.stringify({ type: "InputError", errors: validationErrors })
+        );
       }
 
       return originalMethod.apply(this, args);

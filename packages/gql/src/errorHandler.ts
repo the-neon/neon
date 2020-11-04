@@ -8,12 +8,30 @@ import {
 import { GraphQLError } from "graphql";
 
 const errorHandler = (ex: GraphQLError): Error => {
-  console.error(JSON.stringify(ex));
-  const originalErrorType = ex?.originalError?.["type"];
-  const originalErrorMessage = ex?.originalError?.["message"];
+  const originalErrorType = ex?.originalError?.["type"] ?? null;
+  const originalErrorMessage = ex?.originalError?.["message"] ?? "system error";
 
-  if (!originalErrorType || !originalErrorMessage) {
-    return new Error();
+  // Handle validator error first
+  try {
+    const jsonErrorMessage = JSON.parse(originalErrorMessage);
+    if (jsonErrorMessage.type === "InputError") {
+      if (jsonErrorMessage.errors.length > 1) {
+        return new UserInputError(originalErrorMessage, {
+          inputs: jsonErrorMessage.errors.map(({ key, message }) => ({
+            field: key,
+            message: message,
+          })),
+          severity: "error",
+        });
+      }
+      if (jsonErrorMessage.errors.length) {
+        return new UserInputError(jsonErrorMessage.errors[0].message, {
+          severity: "error",
+        });
+      }
+    }
+  } catch (error) {
+    console.error(JSON.stringify(ex));
   }
 
   switch (originalErrorType) {
