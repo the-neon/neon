@@ -9,6 +9,7 @@ import {
   ValidationFunction,
   Validator,
 } from "./Validator";
+import { InputError } from "@the-neon/core";
 
 /**
  * Method decorator for authlidation
@@ -134,9 +135,7 @@ export function Validate(
       });
 
       if (validationErrors.length > 0) {
-        throw new Error(
-          JSON.stringify({ type: "InputError", errors: validationErrors })
-        );
+        throw new InputError("ValidationErrors", validationErrors);
       }
 
       return originalMethod.apply(this, args);

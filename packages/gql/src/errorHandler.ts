@@ -11,29 +11,6 @@ const errorHandler = (ex: GraphQLError): Error => {
   const originalErrorType = ex?.originalError?.["type"] ?? null;
   const originalErrorMessage = ex?.originalError?.["message"] ?? "system error";
 
-  // Handle validator error first
-  try {
-    const jsonErrorMessage = JSON.parse(originalErrorMessage);
-    if (jsonErrorMessage.type === "InputError") {
-      if (jsonErrorMessage.errors.length > 1) {
-        return new UserInputError(originalErrorMessage, {
-          inputs: jsonErrorMessage.errors.map(({ key, message }) => ({
-            field: key,
-            message: message,
-          })),
-          severity: "error",
-        });
-      }
-      if (jsonErrorMessage.errors.length) {
-        return new UserInputError(jsonErrorMessage.errors[0].message, {
-          severity: "error",
-        });
-      }
-    }
-  } catch (error) {
-    console.error(JSON.stringify(ex));
-  }
-
   switch (originalErrorType) {
     case "AuthorizationError":
       return new ForbiddenError(originalErrorMessage);
@@ -44,11 +21,17 @@ const errorHandler = (ex: GraphQLError): Error => {
       if (!errors) {
         return new UserInputError(originalErrorMessage, { severity: "error" });
       }
+
+      const inputs = errors.map(({ key, message }) => ({
+        field: key,
+        message: message,
+      }));
+
+      if (inputs.length === 1 && !inputs[0].field) {
+        return new UserInputError(inputs[0].message, { severity: "error" });
+      }
       return new UserInputError(originalErrorMessage, {
-        inputs: Object.keys(errors).map((key) => ({
-          field: key,
-          message: errors[key],
-        })),
+        inputs,
         severity: "error",
       });
     }

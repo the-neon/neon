@@ -25,10 +25,12 @@ class InputError extends Error {
   public static DEFAULT_ERROR_MESSAGE = "Request input is not valid!";
 
   public type: string;
+  public errors: Record<string, string>[];
 
-  constructor(customMessage?: string) {
+  constructor(customMessage?: string, errors?: Record<string, string>[]) {
     super(customMessage ?? AuthenticationError.DEFAULT_ERROR_MESSAGE);
     this.type = "InputError";
+    this.errors = errors ?? [];
   }
 }
 
