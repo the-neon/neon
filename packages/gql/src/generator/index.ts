@@ -22,7 +22,7 @@ import {
 import chalk from "chalk";
 
 import { resolveConfig } from "./config";
-import FileService from "./FileService";
+import GraphQlApiClientGenerator from "./GraphQlApiClientGenerator";
 import Mapper, { BuiltinType } from "./Mapper";
 
 interface TypeProp {
@@ -704,7 +704,7 @@ writeFileSync(schemapath, schema.join("\n"));
 writeFileSync(resolverspath, lines.join("\n"));
 
 if (config.outApiClient) {
-  FileService.generateFiles(
+  GraphQlApiClientGenerator.generateFiles(
     queries,
     mutations,
     inter,
