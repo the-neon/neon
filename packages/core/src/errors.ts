@@ -1,3 +1,5 @@
+import { ErrorPrefix, ErrorReason } from "./enums";
+
 class AuthorizationError extends Error {
   public static DEFAULT_ERROR_MESSAGE =
     "You are not authorized to access this resource!";
@@ -45,9 +47,29 @@ class ItemNotFoundError extends Error {
   }
 }
 
+class ApplicationError extends Error {
+  public static readonly type = "ApplicationError";
+  public prefix?: ErrorPrefix;
+  public reason?: ErrorReason;
+  public affected?: string[];
+
+  constructor(
+    prefix?: ErrorPrefix,
+    reason?: ErrorReason,
+    affected?: string[],
+    message?: string
+  ) {
+    super(message ?? "Unknown error!");
+    this.prefix = prefix ?? ErrorPrefix.System;
+    this.reason = reason ?? ErrorReason.Unknown;
+    this.affected = affected ?? [];
+  }
+}
+
 export {
-  AuthorizationError,
+  ApplicationError,
   AuthenticationError,
+  AuthorizationError,
   InputError,
   ItemNotFoundError,
 };

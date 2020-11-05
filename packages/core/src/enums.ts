@@ -4,7 +4,7 @@
 //  00000100 - only delete - 4
 //  00001000 - only execute - 8
 //  00010000 - only approve - 16
-export enum Action {
+enum Action {
   Read = 1,
   Write = 1 << 1,
   Delete = 1 << 2,
@@ -12,7 +12,25 @@ export enum Action {
   Approve = 1 << 4,
 }
 
-export enum SkipAuthorization {
+enum SkipAuthorization {
   no = 0,
   yes = 1,
 }
+
+enum ErrorPrefix {
+  Authentication = "AUTH",
+  Authorization = "AZ",
+  Custom = "CUS",
+  InputValidation = "IV",
+  System = "SYS",
+}
+
+enum ErrorReason {
+  InvalidFormat = "IFMT",
+  Required = "RQ",
+  SmallerThan = "ST",
+  GreaterThan = "GT",
+  Unknown = "U",
+}
+
+export { Action, SkipAuthorization, ErrorPrefix, ErrorReason };
