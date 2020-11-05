@@ -69,6 +69,8 @@ export const apiCall = async ({ query, variables, fragments }) => {
     const respDef = FileService.createReqFields(query, types);
 
     const queryName = query.methodName.toUpperCase() + "_QUERY";
+    let fragmentsIn = "";
+    let fragmentsOut = "";
 
     queryLines.push("");
     queryLines.push(`const ${queryName} = \``);
@@ -76,25 +78,21 @@ export const apiCall = async ({ query, variables, fragments }) => {
       `${FileService.ts}${type} ${query.methodName}${paramsDef} {`
     );
     queryLines.push(
-      `${FileService.ts}${FileService.ts}${query.methodName}${inParams} {`
+      `${FileService.ts}${FileService.ts}${query.methodName}${inParams}`
     );
-    queryLines.push(
-      `${FileService.ts}${FileService.ts}${FileService.ts}${respDef}`
-    );
-
-    let fragmentsIn = "";
-    let fragmentsOut = "";
-
     // TODO: check if fragments can be defined,; i.e. have compex type in response
     if (respDef) {
+      queryLines.push(`${FileService.ts}${FileService.ts}{`);
+      queryLines.push(
+        `${FileService.ts}${FileService.ts}${FileService.ts}${respDef}`
+      );
       queryLines.push(
         `${FileService.ts}${FileService.ts}${FileService.ts}...fragments`
       );
       fragmentsIn = "fragments = null";
       fragmentsOut = ", fragments ";
+      queryLines.push(`${FileService.ts}${FileService.ts}}`);
     }
-
-    queryLines.push(`${FileService.ts}${FileService.ts}}`);
     queryLines.push(`${FileService.ts}}\`;`);
     queryLines.push("");
 
