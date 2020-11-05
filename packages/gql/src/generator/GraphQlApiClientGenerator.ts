@@ -40,7 +40,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
     if (errors.length === 1 && errors[0].inputs.length === 1 && !errors[0].inputs[0].field) {
       return { success: false, message: errors[0].inputs[0].message };
     }
-    return { success: false, message: errors[0].message, errors };
+    return { success: false, errors };
   }
 }
   `;
