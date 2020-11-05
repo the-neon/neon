@@ -9,7 +9,13 @@ import {
   ValidationFunction,
   Validator,
 } from "./Validator";
-import { InputError } from "@the-neon/core";
+import {
+  ApplicationErrorsCollection,
+  InputError,
+  ApplicationError,
+  ErrorReason,
+  ErrorPrefix,
+} from "@the-neon/core";
 
 /**
  * Method decorator for authlidation
@@ -37,7 +43,12 @@ export function Validate(
 
     //wrapping the original method
     descriptor.value = function (...args: any[]) {
-      const validationErrors: { key?: string; message: string }[] = [];
+      const validationErrors: {
+        key?: string;
+        message: string;
+        prefix?: string;
+        reason?: string;
+      }[] = [];
 
       if (functions) {
         let fns: any[];
@@ -52,7 +63,14 @@ export function Validate(
             try {
               fn(args, this["context"]);
             } catch (ex) {
-              validationErrors.push({ message: ex.message });
+              validationErrors.push(
+                new ApplicationError(
+                  ErrorPrefix.InputValidation,
+                  ErrorReason.Unknown,
+                  null,
+                  ex.message
+                )
+              );
             }
           }
         });
@@ -65,7 +83,14 @@ export function Validate(
             const { fn, args } = localFn();
             fn(params, args, arguments, this);
           } catch (ex) {
-            validationErrors.push({ message: ex.message });
+            validationErrors.push(
+              new ApplicationError(
+                ErrorPrefix.InputValidation,
+                ErrorReason.Unknown,
+                null,
+                ex.message
+              )
+            );
           }
           return;
         }
@@ -88,45 +113,65 @@ export function Validate(
               try {
                 validator(argValue, this);
               } catch (ex) {
-                validationErrors.push({
-                  key,
-                  message: `'${key}' ${ex.message}`,
-                });
+                validationErrors.push(
+                  new ApplicationError(
+                    ErrorPrefix.InputValidation,
+                    ErrorReason.Unknown,
+                    key,
+                    `'${key}' ${ex.message}`
+                  )
+                );
               }
             } else {
               switch (validator) {
                 case Validator.email:
                   if (!Valid.email(argValue)) {
-                    validationErrors.push({
-                      key,
-                      message: `Invalid email address for '${key}' (${argValue})`,
-                    });
+                    validationErrors.push(
+                      new ApplicationError(
+                        ErrorPrefix.InputValidation,
+                        ErrorReason.InvalidFormat,
+                        key,
+                        `Invalid email address for '${key}' (${argValue})`
+                      )
+                    );
                   }
                   break;
 
                 case Validator.notEmpty:
                   if (!Valid.notEmpty(argValue)) {
-                    validationErrors.push({
-                      key,
-                      message: `'${key}'is required`,
-                    });
+                    validationErrors.push(
+                      new ApplicationError(
+                        ErrorPrefix.InputValidation,
+                        ErrorReason.Required,
+                        key,
+                        `'${key}'is required`
+                      )
+                    );
                   }
                   break;
 
                 case Validator.uuid:
                   if (!Valid.uuid(argValue)) {
-                    validationErrors.push({
-                      key,
-                      message: `'${key}'is not valid UUID`,
-                    });
+                    validationErrors.push(
+                      new ApplicationError(
+                        ErrorPrefix.InputValidation,
+                        ErrorReason.InvalidFormat,
+                        key,
+                        `'${key}'is not valid UUID`
+                      )
+                    );
                   }
                   break;
 
                 default:
-                  validationErrors.push({
-                    key,
-                    message: `Invlid validation for '${key}'`,
-                  });
+                  validationErrors.push(
+                    new ApplicationError(
+                      ErrorPrefix.InputValidation,
+                      ErrorReason.Unknown,
+                      key,
+                      `Invlid validation for '${key}'`
+                    )
+                  );
                   break;
               }
             }
@@ -135,7 +180,7 @@ export function Validate(
       });
 
       if (validationErrors.length > 0) {
-        throw new InputError("ValidationErrors", validationErrors);
+        throw new ApplicationErrorsCollection(validationErrors);
       }
 
       return originalMethod.apply(this, args);

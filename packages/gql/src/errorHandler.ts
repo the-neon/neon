@@ -6,6 +6,11 @@ import {
   UserInputError,
 } from "apollo-server";
 import { GraphQLError } from "graphql";
+import {
+  ApplicationError,
+  ApplicationErrorCollection,
+  ErrorPrefix,
+} from "@the-neon/core";
 
 const errorHandler = (ex: GraphQLError): Error => {
   console.error(JSON.stringify(ex));
@@ -17,6 +22,50 @@ const errorHandler = (ex: GraphQLError): Error => {
       return new ForbiddenError(originalErrorMessage);
     case "AuthenticationError":
       return new AuthenticationError(originalErrorMessage);
+
+    case "ApplicationError": {
+      const originalError: ApplicationError = ex.originalError;
+      if (originalError.prefix === ErrorPrefix.Authentication) {
+        return new AuthenticationError(originalErrorMessage);
+      }
+      if (originalError.prefix === ErrorPrefix.Authorization) {
+        return new ForbiddenError(originalErrorMessage);
+      }
+      return new UserInputError(originalErrorMessage, {
+        affected: originalError.affected,
+        code: `${originalError.prefix}_${originalError.reason}`,
+        message: originalError.message,
+        severity: "error",
+      });
+    }
+
+    case "ApplicationErrorCollection": {
+      const originalError: ApplicationErrorCollection = ex.originalError;
+      const errors = originalError.errors;
+      if (!errors) {
+        return new UserInputError(originalErrorMessage, { severity: "error" });
+      }
+      if (errors.some((e) => e.prefix === ErrorPrefix.Authentication)) {
+        return new AuthenticationError(originalErrorMessage);
+      }
+      if (errors.some((e) => e.prefix === ErrorPrefix.Authorization)) {
+        return new ForbiddenError(originalErrorMessage);
+      }
+
+      const inputs = errors.map((e) => ({
+        affected: e.affected,
+        code: `${e.prefix}_${e.reason}`,
+        message: e.message,
+      }));
+
+      const code = [...new Set(errors.map((e) => e.prefix))].join("_");
+
+      return new UserInputError(originalErrorMessage, {
+        code,
+        inputs,
+        severity: "error",
+      });
+    }
     case "InputError": {
       const errors = ex.originalError?.["errors"];
       if (!errors) {

@@ -48,7 +48,7 @@ class ItemNotFoundError extends Error {
 }
 
 class ApplicationError extends Error {
-  public static readonly type = "ApplicationError";
+  public type: string;
   public prefix?: ErrorPrefix;
   public reason?: ErrorReason;
   public affected?: string[];
@@ -59,14 +59,27 @@ class ApplicationError extends Error {
     affected?: string[],
     message?: string
   ) {
-    super(message ?? "Unknown error!");
+    super(message);
     this.prefix = prefix ?? ErrorPrefix.System;
     this.reason = reason ?? ErrorReason.Unknown;
     this.affected = affected ?? [];
+    this.type = "ApplicationError";
+  }
+}
+
+class ApplicationErrorsCollection extends Error {
+  public type: string;
+  public errors: Error[];
+
+  constructor(errors: Error[], message?: string) {
+    super(message);
+    this.type = "ApplicationErrorCollection";
+    this.errors = errors;
   }
 }
 
 export {
+  ApplicationErrorsCollection,
   ApplicationError,
   AuthenticationError,
   AuthorizationError,
