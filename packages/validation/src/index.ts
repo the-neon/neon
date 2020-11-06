@@ -59,8 +59,8 @@ export function Validate(
             } catch (ex) {
               validationErrors.push(
                 new ApplicationError(
-                  ErrorPrefix.InputValidation,
-                  null,
+                  ex.prefix || ErrorPrefix.InputValidation,
+                  ex.affected || null,
                   ex.message
                 )
               );
@@ -78,8 +78,8 @@ export function Validate(
           } catch (ex) {
             validationErrors.push(
               new ApplicationError(
-                ErrorPrefix.InputValidation,
-                null,
+                ex.prefix || ErrorPrefix.InputValidation,
+                ex.affected || null,
                 ex.message
               )
             );

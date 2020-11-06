@@ -31,6 +31,13 @@ const handleApplicationError = (
     return new ForbiddenError(message);
   }
 
+  if (errors.some((e) => e.prefix === ErrorPrefix.NotSupportedAppVersion)) {
+    return new ApolloError(
+      "Not supported Application!",
+      ErrorPrefix.NotSupportedAppVersion
+    );
+  }
+
   if (errors.length === 1) {
     const [originalError] = errors;
     return new UserInputError(message, {

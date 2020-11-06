@@ -26,6 +26,7 @@ enum ErrorPrefix {
   InputValidationRequired = "IV.RQ",
   InputValidationSmallerThan = "IV.ST",
   InputValidationGreaterThan = "IV.GT",
+  NotSupportedAppVersion = "NSAV",
   System = "SYS",
 }
 
