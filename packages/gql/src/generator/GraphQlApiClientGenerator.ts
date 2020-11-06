@@ -6,6 +6,7 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { existsSync } from "fs";
 import path from "path";
+import { ErrorPrefix } from "@the-neon/core";
 
 class GraphQlApiClientGenerator {
   // tabstop
@@ -14,6 +15,12 @@ class GraphQlApiClientGenerator {
   private static readonly GQL_CLIENT = `
 import { API } from "aws-amplify";
 import gql from "graphql-tag";
+
+export const ErrorPrefix = {
+  ${Object.keys(ErrorPrefix)
+    .map((key) => `${key}: '${ErrorPrefix[key]}',`)
+    .join("\n")}
+};
 
 export const apiCall = async ({ query, variables, fragments }) => {
   let fragmentStr = '';
