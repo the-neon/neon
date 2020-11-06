@@ -6,16 +6,65 @@ import {
   UserInputError,
 } from "apollo-server";
 import { GraphQLError } from "graphql";
-import {
-  ApplicationError,
-  ApplicationErrorCollection,
-  ErrorPrefix,
-} from "@the-neon/core";
+import { ApplicationError, ErrorPrefix } from "@the-neon/core";
+
+const tryParse = (str: string): Error[] | null | undefined => {
+  try {
+    const result = JSON.parse(str);
+    if (result.type === "ApplicationError") {
+      return result as ApplicationError;
+    }
+    return result as Error[];
+  } catch {
+    null;
+  }
+};
+
+const handleApplicationError = (
+  errors: ApplicationError[],
+  message: string
+) => {
+  if (errors.some((e) => e.prefix === ErrorPrefix.Authentication)) {
+    return new AuthenticationError(message);
+  }
+  if (errors.some((e) => e.prefix === ErrorPrefix.Authorization)) {
+    return new ForbiddenError(message);
+  }
+
+  if (errors.length === 1) {
+    const [originalError] = errors;
+    return new UserInputError(message, {
+      affected: originalError.affected,
+      code: originalError.prefix,
+      message: originalError.message || originalError._message,
+      severity: "error",
+    });
+  }
+
+  const inputs = errors.map((e) => ({
+    affected: e.affected,
+    code: e.prefix,
+    message: e.message || e._message,
+  }));
+  const code = [...new Set(errors.map((e) => e.prefix))].join("_");
+  return new UserInputError(message, {
+    code,
+    inputs,
+    severity: "error",
+  });
+};
 
 const errorHandler = (ex: GraphQLError): Error => {
   console.error(JSON.stringify(ex));
   const originalErrorType = ex?.originalError?.["type"] ?? null;
   const originalErrorMessage = ex?.originalError?.["message"] ?? "system error";
+
+  if (!originalErrorType && originalErrorMessage) {
+    const errors = tryParse(originalErrorMessage);
+    if (errors?.length) {
+      return handleApplicationError(errors, "");
+    }
+  }
 
   switch (originalErrorType) {
     case "AuthorizationError":
@@ -23,49 +72,9 @@ const errorHandler = (ex: GraphQLError): Error => {
     case "AuthenticationError":
       return new AuthenticationError(originalErrorMessage);
 
-    case "ApplicationError": {
-      const originalError: ApplicationError = ex.originalError;
-      if (originalError.prefix === ErrorPrefix.Authentication) {
-        return new AuthenticationError(originalErrorMessage);
-      }
-      if (originalError.prefix === ErrorPrefix.Authorization) {
-        return new ForbiddenError(originalErrorMessage);
-      }
-      return new UserInputError(originalErrorMessage, {
-        affected: originalError.affected,
-        code: `${originalError.prefix}_${originalError.reason}`,
-        message: originalError.message,
-        severity: "error",
-      });
-    }
+    case "ApplicationError":
+      return handleApplicationError([ex.originalError], originalErrorMessage);
 
-    case "ApplicationErrorCollection": {
-      const originalError: ApplicationErrorCollection = ex.originalError;
-      const errors = originalError.errors;
-      if (!errors) {
-        return new UserInputError(originalErrorMessage, { severity: "error" });
-      }
-      if (errors.some((e) => e.prefix === ErrorPrefix.Authentication)) {
-        return new AuthenticationError(originalErrorMessage);
-      }
-      if (errors.some((e) => e.prefix === ErrorPrefix.Authorization)) {
-        return new ForbiddenError(originalErrorMessage);
-      }
-
-      const inputs = errors.map((e) => ({
-        affected: e.affected,
-        code: `${e.prefix}_${e.reason}`,
-        message: e.message,
-      }));
-
-      const code = [...new Set(errors.map((e) => e.prefix))].join("_");
-
-      return new UserInputError(originalErrorMessage, {
-        code,
-        inputs,
-        severity: "error",
-      });
-    }
     case "InputError": {
       const errors = ex.originalError?.["errors"];
       if (!errors) {

@@ -22,15 +22,11 @@ enum ErrorPrefix {
   Authorization = "AZ",
   Custom = "CUS",
   InputValidation = "IV",
+  InputValidationInvalidFormat = "IV.IFMT",
+  InputValidationRequired = "IV.RQ",
+  InputValidationSmallerThan = "IV.ST",
+  InputValidationGreaterThan = "IV.GT",
   System = "SYS",
 }
 
-enum ErrorReason {
-  InvalidFormat = "IFMT",
-  Required = "RQ",
-  SmallerThan = "ST",
-  GreaterThan = "GT",
-  Unknown = "U",
-}
-
-export { Action, SkipAuthorization, ErrorPrefix, ErrorReason };
+export { Action, SkipAuthorization, ErrorPrefix };

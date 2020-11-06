@@ -1,4 +1,4 @@
-import { ErrorPrefix, ErrorReason } from "./enums";
+import { ErrorPrefix } from "./enums";
 
 class AuthorizationError extends Error {
   public static DEFAULT_ERROR_MESSAGE =
@@ -50,36 +50,20 @@ class ItemNotFoundError extends Error {
 class ApplicationError extends Error {
   public type: string;
   public prefix?: ErrorPrefix;
-  public reason?: ErrorReason;
   public affected?: string[];
+  public _message: string;
 
-  constructor(
-    prefix?: ErrorPrefix,
-    reason?: ErrorReason,
-    affected?: string[],
-    message?: string
-  ) {
+  constructor(prefix?: ErrorPrefix, affected?: string[], message?: string) {
     super(message);
     this.prefix = prefix ?? ErrorPrefix.System;
-    this.reason = reason ?? ErrorReason.Unknown;
+
     this.affected = affected ?? [];
     this.type = "ApplicationError";
-  }
-}
-
-class ApplicationErrorsCollection extends Error {
-  public type: string;
-  public errors: Error[];
-
-  constructor(errors: Error[], message?: string) {
-    super(message);
-    this.type = "ApplicationErrorCollection";
-    this.errors = errors;
+    this._message = message || "";
   }
 }
 
 export {
-  ApplicationErrorsCollection,
   ApplicationError,
   AuthenticationError,
   AuthorizationError,

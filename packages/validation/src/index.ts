@@ -9,13 +9,7 @@ import {
   ValidationFunction,
   Validator,
 } from "./Validator";
-import {
-  ApplicationErrorsCollection,
-  InputError,
-  ApplicationError,
-  ErrorReason,
-  ErrorPrefix,
-} from "@the-neon/core";
+import { ApplicationError, ErrorPrefix } from "@the-neon/core";
 
 /**
  * Method decorator for authlidation
@@ -66,7 +60,6 @@ export function Validate(
               validationErrors.push(
                 new ApplicationError(
                   ErrorPrefix.InputValidation,
-                  ErrorReason.Unknown,
                   null,
                   ex.message
                 )
@@ -86,7 +79,6 @@ export function Validate(
             validationErrors.push(
               new ApplicationError(
                 ErrorPrefix.InputValidation,
-                ErrorReason.Unknown,
                 null,
                 ex.message
               )
@@ -116,7 +108,6 @@ export function Validate(
                 validationErrors.push(
                   new ApplicationError(
                     ErrorPrefix.InputValidation,
-                    ErrorReason.Unknown,
                     key,
                     `'${key}' ${ex.message}`
                   )
@@ -128,8 +119,7 @@ export function Validate(
                   if (!Valid.email(argValue)) {
                     validationErrors.push(
                       new ApplicationError(
-                        ErrorPrefix.InputValidation,
-                        ErrorReason.InvalidFormat,
+                        ErrorPrefix.InputValidationInvalidFormat,
                         key,
                         `Invalid email address for '${key}' (${argValue})`
                       )
@@ -141,8 +131,7 @@ export function Validate(
                   if (!Valid.notEmpty(argValue)) {
                     validationErrors.push(
                       new ApplicationError(
-                        ErrorPrefix.InputValidation,
-                        ErrorReason.Required,
+                        ErrorPrefix.InputValidationRequired,
                         key,
                         `'${key}'is required`
                       )
@@ -154,8 +143,7 @@ export function Validate(
                   if (!Valid.uuid(argValue)) {
                     validationErrors.push(
                       new ApplicationError(
-                        ErrorPrefix.InputValidation,
-                        ErrorReason.InvalidFormat,
+                        ErrorPrefix.InputValidationInvalidFormat,
                         key,
                         `'${key}'is not valid UUID`
                       )
@@ -167,7 +155,6 @@ export function Validate(
                   validationErrors.push(
                     new ApplicationError(
                       ErrorPrefix.InputValidation,
-                      ErrorReason.Unknown,
                       key,
                       `Invlid validation for '${key}'`
                     )
@@ -180,9 +167,8 @@ export function Validate(
       });
 
       if (validationErrors.length > 0) {
-        throw new ApplicationErrorsCollection(validationErrors);
+        throw new Error(JSON.stringify(validationErrors));
       }
-
       return originalMethod.apply(this, args);
     };
   };

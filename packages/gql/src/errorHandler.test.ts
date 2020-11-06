@@ -3,12 +3,7 @@ import {
   ForbiddenError,
   UserInputError,
 } from "apollo-server";
-import {
-  ApplicationErrorsCollection,
-  ApplicationError,
-  ErrorPrefix,
-  ErrorReason,
-} from "@the-neon/core";
+import { ApplicationError, ErrorPrefix } from "@the-neon/core";
 import errorHandler from "./errorHandler";
 import { GraphQLError } from "graphql";
 
@@ -18,26 +13,19 @@ describe("Error handler tests", () => {
     sampleMessage = "sample custom message";
   });
 
-  it("ApplicationErrorsCollection should be mapped as UserInputError", () => {
+  it("ApplicationError-1 multiple errors should be mapped as UserInputError", () => {
     // Arrange
     const errors: ApplicationError[] = [
-      new ApplicationError(
-        ErrorPrefix.InputValidation,
-        ErrorReason.InvalidFormat,
-        ["email"]
-      ),
-      new ApplicationError(ErrorPrefix.InputValidation, ErrorReason.Required, [
-        "email",
-      ]),
+      new ApplicationError(ErrorPrefix.InputValidationInvalidFormat, ["email"]),
+      new ApplicationError(ErrorPrefix.InputValidationRequired, ["email"]),
     ];
-    const applicationErrorsCollection = new ApplicationErrorsCollection(errors);
     const graphQlError: GraphQLError = new GraphQLError(
       sampleMessage,
       null,
       null,
       null,
       null,
-      applicationErrorsCollection
+      new Error(JSON.stringify(errors))
     );
 
     // Act
@@ -45,45 +33,44 @@ describe("Error handler tests", () => {
 
     // Assert
     expect(responseError).toBeDefined();
-    expect(responseError.code).toEqual(ErrorPrefix.InputValidation);
+    expect(responseError.code).toEqual(
+      `${ErrorPrefix.InputValidationInvalidFormat}_${ErrorPrefix.InputValidationRequired}`
+    );
     expect(responseError.extensions.inputs).toEqual([
       {
         affected: ["email"],
-        code: `${ErrorPrefix.InputValidation}_${ErrorReason.InvalidFormat}`,
+        code: ErrorPrefix.InputValidationInvalidFormat,
         message: "",
       },
       {
         affected: ["email"],
-        code: `${ErrorPrefix.InputValidation}_${ErrorReason.Required}`,
+        code: ErrorPrefix.InputValidationRequired,
         message: "",
       },
     ]);
   });
 
-  it("ApplicationErrorsCollection with custom error messages should be mapped as UserInputError with inputs with messages", () => {
+  it("ApplicationError-2 multiple errors with custom error messages should be mapped as UserInputError with inputs with messages", () => {
     // Arrange
     const errors: ApplicationError[] = [
       new ApplicationError(
-        ErrorPrefix.InputValidation,
-        ErrorReason.InvalidFormat,
+        ErrorPrefix.InputValidationInvalidFormat,
         ["email"],
         sampleMessage
       ),
       new ApplicationError(
-        ErrorPrefix.InputValidation,
-        ErrorReason.Required,
+        ErrorPrefix.InputValidationRequired,
         ["email"],
         sampleMessage
       ),
     ];
-    const applicationErrorsCollection = new ApplicationErrorsCollection(errors);
     const graphQlError: GraphQLError = new GraphQLError(
       sampleMessage,
       null,
       null,
       null,
       null,
-      applicationErrorsCollection
+      new Error(JSON.stringify(errors))
     );
 
     // Act
@@ -91,51 +78,49 @@ describe("Error handler tests", () => {
 
     // Assert
     expect(responseError).toBeDefined();
-    expect(responseError.code).toEqual(ErrorPrefix.InputValidation);
+    expect(responseError.code).toEqual(
+      `${ErrorPrefix.InputValidationInvalidFormat}_${ErrorPrefix.InputValidationRequired}`
+    );
     expect(responseError.extensions.inputs).toEqual([
       {
         affected: ["email"],
-        code: `${ErrorPrefix.InputValidation}_${ErrorReason.InvalidFormat}`,
+        code: ErrorPrefix.InputValidationInvalidFormat,
         message: sampleMessage,
       },
       {
         affected: ["email"],
-        code: `${ErrorPrefix.InputValidation}_${ErrorReason.Required}`,
+        code: ErrorPrefix.InputValidationRequired,
         message: sampleMessage,
       },
     ]);
   });
 
-  it("ApplicationErrorsCollection will be mapped as ForbiddenError if there is error with Authorization prefix", () => {
+  it("ApplicationError-3 multiple errors will be mapped as ForbiddenError if there is error with Authorization prefix", () => {
     // Arrange
     const errors: ApplicationError[] = [
       new ApplicationError(
-        ErrorPrefix.Authorization,
-        ErrorReason.InvalidFormat,
+        ErrorPrefix.AuthorizationInvalidFormat,
         ["email"],
         sampleMessage
       ),
       new ApplicationError(
-        ErrorPrefix.InputValidation,
-        ErrorReason.InvalidFormat,
+        ErrorPrefix.InputValidationInvalidFormat,
         ["email"],
         sampleMessage
       ),
       new ApplicationError(
-        ErrorPrefix.InputValidation,
-        ErrorReason.Required,
+        ErrorPrefix.InputValidationRequired,
         ["email"],
         sampleMessage
       ),
     ];
-    const applicationErrorsCollection = new ApplicationErrorsCollection(errors);
     const graphQlError: GraphQLError = new GraphQLError(
       sampleMessage,
       null,
       null,
       null,
       null,
-      applicationErrorsCollection
+      new Error(JSON.stringify(errors))
     );
 
     // Act
@@ -145,36 +130,32 @@ describe("Error handler tests", () => {
     expect(responseError).toBeDefined();
   });
 
-  it("ApplicationErrorsCollection will be mapped as AuthenticationError if there is error with Authentication prefix", () => {
+  it("ApplicationError-4 multiple errors will be mapped as AuthenticationError if there is error with Authentication prefix", () => {
     // Arrange
     const errors: ApplicationError[] = [
       new ApplicationError(
-        ErrorPrefix.Authentication,
-        ErrorReason.InvalidFormat,
+        ErrorPrefix.AuthenticationInvalidFormat,
         ["email"],
         sampleMessage
       ),
       new ApplicationError(
-        ErrorPrefix.InputValidation,
-        ErrorReason.InvalidFormat,
+        ErrorPrefix.InputValidationInvalidFormat,
         ["email"],
         sampleMessage
       ),
       new ApplicationError(
-        ErrorPrefix.InputValidation,
-        ErrorReason.Required,
+        ErrorPrefix.InputValidationRequired,
         ["email"],
         sampleMessage
       ),
     ];
-    const applicationErrorsCollection = new ApplicationErrorsCollection(errors);
     const graphQlError: GraphQLError = new GraphQLError(
       sampleMessage,
       null,
       null,
       null,
       null,
-      applicationErrorsCollection
+      new Error(JSON.stringify(errors))
     );
 
     // Act
@@ -184,11 +165,10 @@ describe("Error handler tests", () => {
     expect(responseError).toBeDefined();
   });
 
-  it("ApplicationError should be mapped as UserInputError", () => {
+  it("ApplicationError-5 should be mapped as UserInputError", () => {
     // Arrange
     const originalError = new ApplicationError(
-      ErrorPrefix.InputValidation,
-      ErrorReason.InvalidFormat,
+      ErrorPrefix.InputValidationInvalidFormat,
       ["email"],
       sampleMessage
     );
@@ -207,16 +187,15 @@ describe("Error handler tests", () => {
     // Assert
     expect(responseError).toBeDefined();
     expect(responseError.code).toEqual(
-      `${ErrorPrefix.InputValidation}_${ErrorReason.InvalidFormat}`
+      ErrorPrefix.InputValidationInvalidFormat
     );
     expect(responseError.message).toEqual(sampleMessage);
   });
 
-  it("ApplicationError should be mapped as AuthenticationError if there is Authentication prefix", () => {
+  it("ApplicationError-6 should be mapped as AuthenticationError if there is Authentication prefix", () => {
     // Arrange
     const originalError = new ApplicationError(
-      ErrorPrefix.Authentication,
-      ErrorReason.InvalidFormat,
+      ErrorPrefix.AuthenticationInvalidFormat,
       ["email"],
       sampleMessage
     );
@@ -236,11 +215,10 @@ describe("Error handler tests", () => {
     expect(responseError).toBeDefined();
   });
 
-  it("ApplicationError should be mapped as ForbiddenError if there is Authorization prefix", () => {
+  it("ApplicationError-7 should be mapped as ForbiddenError if there is Authorization prefix", () => {
     // Arrange
     const originalError = new ApplicationError(
-      ErrorPrefix.Authorization,
-      ErrorReason.InvalidFormat,
+      ErrorPrefix.AuthorizationInvalidFormat,
       ["email"],
       sampleMessage
     );
