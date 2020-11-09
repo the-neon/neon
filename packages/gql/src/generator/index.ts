@@ -367,7 +367,9 @@ const delint = (sourceFile: SourceFile) => {
                     break;
                   default:
                     member.typeName = element.type.typeName.escapedText;
-                    member.scalar = false;
+                    member.scalar = enums.some(
+                      (e) => e.name === element.type.typeName.escapedText
+                    );
                     break;
                 }
               }
