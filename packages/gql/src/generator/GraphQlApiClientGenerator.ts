@@ -88,6 +88,8 @@ export const apiCall = async ({ query, variables, fragments }) => {
     const respDef = GraphQlApiClientGenerator.createReqFields(query, types);
 
     const queryName = query.methodName.toUpperCase() + "_QUERY";
+    let fragmentsIn = "";
+    let fragmentsOut = "";
 
     queryLines.push("");
     queryLines.push(`const ${queryName} = \``);
@@ -95,27 +97,25 @@ export const apiCall = async ({ query, variables, fragments }) => {
       `${GraphQlApiClientGenerator.ts}${type} ${query.methodName}${paramsDef} {`
     );
     queryLines.push(
-      `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${query.methodName}${inParams} {`
+      `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${query.methodName}${inParams}`
     );
-    queryLines.push(
-      `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${respDef}`
-    );
-
-    let fragmentsIn = "";
-    let fragmentsOut = "";
-
     // TODO: check if fragments can be defined,; i.e. have compex type in response
     if (respDef) {
+      queryLines.push(
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}{`
+      );
+      queryLines.push(
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${respDef}`
+      );
       queryLines.push(
         `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}...fragments`
       );
       fragmentsIn = "fragments = null";
       fragmentsOut = ", fragments ";
+      queryLines.push(
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}}`
+      );
     }
-
-    queryLines.push(
-      `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}}`
-    );
     queryLines.push(`${GraphQlApiClientGenerator.ts}}\`;`);
     queryLines.push("");
 

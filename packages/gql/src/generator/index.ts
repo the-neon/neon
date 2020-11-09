@@ -178,15 +178,9 @@ const delint = (sourceFile: SourceFile) => {
 
       if (!node["type"] || !node["type"].typeArguments) {
         responseType = "JSON";
-      } else if (node["type"].typeArguments[0].kind === SyntaxKind.TupleType) {
-        responseType = `[${node["type"].typeArguments[0].elementTypes[0].typeName.escapedText}]`;
-      } else if (node["type"].typeArguments[0].kind === SyntaxKind.ArrayType) {
-        responseType = `[${node["type"].typeArguments[0].elementType.typeName.escapedText}]`;
-      } else if (node["type"].typeArguments[0].kind === SyntaxKind.AnyKeyword) {
-        responseType = "JSON";
       } else {
         try {
-          responseType = node["type"].typeArguments[0].typeName.escapedText;
+          responseType = Mapper.mapType(node["type"].typeArguments[0]);
         } catch (ex) {
           console.log(ex.message);
           console.log(node["type"]);
