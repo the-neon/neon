@@ -9,6 +9,7 @@ import {
   ValidationFunction,
   Validator,
 } from "./Validator";
+import { ApplicationError, ErrorPrefix } from "@the-neon/core";
 
 /**
  * Method decorator for authlidation
@@ -36,7 +37,12 @@ export function Validate(
 
     //wrapping the original method
     descriptor.value = function (...args: any[]) {
-      const validationErrors: string[] = [];
+      const validationErrors: {
+        key?: string;
+        message: string;
+        prefix?: string;
+        reason?: string;
+      }[] = [];
 
       if (functions) {
         let fns: any[];
@@ -51,7 +57,13 @@ export function Validate(
             try {
               fn(args, this["context"]);
             } catch (ex) {
-              validationErrors.push(ex.message);
+              validationErrors.push(
+                new ApplicationError(
+                  ex.prefix || ErrorPrefix.InputValidation,
+                  ex.affected || null,
+                  ex.message
+                )
+              );
             }
           }
         });
@@ -64,7 +76,13 @@ export function Validate(
             const { fn, args } = localFn();
             fn(params, args, arguments, this);
           } catch (ex) {
-            validationErrors.push(ex.message);
+            validationErrors.push(
+              new ApplicationError(
+                ex.prefix || ErrorPrefix.InputValidation,
+                ex.affected || null,
+                ex.message
+              )
+            );
           }
           return;
         }
@@ -87,32 +105,60 @@ export function Validate(
               try {
                 validator(argValue, this);
               } catch (ex) {
-                validationErrors.push(`'${key}' ${ex.message}`);
+                validationErrors.push(
+                  new ApplicationError(
+                    ErrorPrefix.InputValidation,
+                    key,
+                    `'${key}' ${ex.message}`
+                  )
+                );
               }
             } else {
               switch (validator) {
                 case Validator.email:
                   if (!Valid.email(argValue)) {
                     validationErrors.push(
-                      `Invalid email address for '${key}' (${argValue})`
+                      new ApplicationError(
+                        ErrorPrefix.InputValidationInvalidFormat,
+                        key,
+                        `Invalid email address for '${key}' (${argValue})`
+                      )
                     );
                   }
                   break;
 
                 case Validator.notEmpty:
                   if (!Valid.notEmpty(argValue)) {
-                    validationErrors.push(`'${key}'is required`);
+                    validationErrors.push(
+                      new ApplicationError(
+                        ErrorPrefix.InputValidationRequired,
+                        key,
+                        `'${key}'is required`
+                      )
+                    );
                   }
                   break;
 
                 case Validator.uuid:
                   if (!Valid.uuid(argValue)) {
-                    validationErrors.push(`'${key}'is not valid UUID`);
+                    validationErrors.push(
+                      new ApplicationError(
+                        ErrorPrefix.InputValidationInvalidFormat,
+                        key,
+                        `'${key}'is not valid UUID`
+                      )
+                    );
                   }
                   break;
 
                 default:
-                  validationErrors.push(`Invlid validation for '${key}'`);
+                  validationErrors.push(
+                    new ApplicationError(
+                      ErrorPrefix.InputValidation,
+                      key,
+                      `Invlid validation for '${key}'`
+                    )
+                  );
                   break;
               }
             }
@@ -123,7 +169,6 @@ export function Validate(
       if (validationErrors.length > 0) {
         throw new Error(JSON.stringify(validationErrors));
       }
-
       return originalMethod.apply(this, args);
     };
   };

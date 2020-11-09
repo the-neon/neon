@@ -6,14 +6,21 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { existsSync } from "fs";
 import path from "path";
+import { ErrorPrefix } from "@the-neon/core";
 
-class FileService {
+class GraphQlApiClientGenerator {
   // tabstop
   private static ts = "  ";
 
   private static readonly GQL_CLIENT = `
 import { API } from "aws-amplify";
 import gql from "graphql-tag";
+
+export const ErrorPrefix = {
+  ${Object.keys(ErrorPrefix)
+    .map((key) => `${key}: '${ErrorPrefix[key]}',`)
+    .join("\n")}
+};
 
 export const apiCall = async ({ query, variables, fragments }) => {
   let fragmentStr = '';
@@ -28,7 +35,19 @@ export const apiCall = async ({ query, variables, fragments }) => {
     const response = await API.graphql({ query: gql\`\${query.replace('...fragments', fragmentStr)}\`, variables });
     return { success: true, data: Object.values(response.data)[0] };
   } catch (e) {
-    return e.errors?.[0] || { success: false, message: 'Unknown error' };
+    if (!e.errors) {
+      return { success: false, message: 'Unknown error' };
+    }
+
+    const errors = e.errors.map(({ extensions, message }) => ({
+      message,
+      inputs: extensions.inputs,
+    }));
+
+    if (errors.length === 1 && errors[0].inputs.length === 1 && !errors[0].inputs[0].field) {
+      return { success: false, message: errors[0].inputs[0].message };
+    }
+    return { success: false, errors };
   }
 }
   `;
@@ -66,7 +85,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
     }
 
     const funcParams = query.params.map((p) => `${p.paramName}`).join(", ");
-    const respDef = FileService.createReqFields(query, types);
+    const respDef = GraphQlApiClientGenerator.createReqFields(query, types);
 
     const queryName = query.methodName.toUpperCase() + "_QUERY";
     let fragmentsIn = "";
@@ -75,25 +94,29 @@ export const apiCall = async ({ query, variables, fragments }) => {
     queryLines.push("");
     queryLines.push(`const ${queryName} = \``);
     queryLines.push(
-      `${FileService.ts}${type} ${query.methodName}${paramsDef} {`
+      `${GraphQlApiClientGenerator.ts}${type} ${query.methodName}${paramsDef} {`
     );
     queryLines.push(
-      `${FileService.ts}${FileService.ts}${query.methodName}${inParams}`
+      `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${query.methodName}${inParams}`
     );
     // TODO: check if fragments can be defined,; i.e. have compex type in response
     if (respDef) {
-      queryLines.push(`${FileService.ts}${FileService.ts}{`);
       queryLines.push(
-        `${FileService.ts}${FileService.ts}${FileService.ts}${respDef}`
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}{`
       );
       queryLines.push(
-        `${FileService.ts}${FileService.ts}${FileService.ts}...fragments`
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${respDef}`
+      );
+      queryLines.push(
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}...fragments`
       );
       fragmentsIn = "fragments = null";
       fragmentsOut = ", fragments ";
-      queryLines.push(`${FileService.ts}${FileService.ts}}`);
+      queryLines.push(
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}}`
+      );
     }
-    queryLines.push(`${FileService.ts}}\`;`);
+    queryLines.push(`${GraphQlApiClientGenerator.ts}}\`;`);
     queryLines.push("");
 
     queryLines.push(
@@ -123,7 +146,11 @@ export const apiCall = async ({ query, variables, fragments }) => {
       if (!api) {
         api = lines.join("\n");
       }
-      api += FileService.createClientMethods(query, "query", types);
+      api += GraphQlApiClientGenerator.createClientMethods(
+        query,
+        "query",
+        types
+      );
       apis.set(query.instance, api);
     }
 
@@ -132,7 +159,11 @@ export const apiCall = async ({ query, variables, fragments }) => {
       if (!api) {
         api = lines.join("\n");
       }
-      api += FileService.createClientMethods(mutation, "mutation", types);
+      api += GraphQlApiClientGenerator.createClientMethods(
+        mutation,
+        "mutation",
+        types
+      );
       apis.set(mutation.instance, api);
     }
 
@@ -153,9 +184,9 @@ export const apiCall = async ({ query, variables, fragments }) => {
       }
 
       const gqlClientPath = path.resolve(apipath, `gqlClient.js`);
-      writeFileSync(gqlClientPath, FileService.GQL_CLIENT);
+      writeFileSync(gqlClientPath, GraphQlApiClientGenerator.GQL_CLIENT);
 
-      const clientApis = FileService.createClientApis(
+      const clientApis = GraphQlApiClientGenerator.createClientApis(
         queries,
         mutations,
         types
@@ -168,4 +199,4 @@ export const apiCall = async ({ query, variables, fragments }) => {
   }
 }
 
-export default FileService;
+export default GraphQlApiClientGenerator;
