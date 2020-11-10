@@ -62,7 +62,6 @@ const handleApplicationError = (
 };
 
 const errorHandler = (ex: GraphQLError): Error => {
-  console.error(JSON.stringify(ex));
   const originalErrorType = ex?.originalError?.["type"] ?? null;
   const originalErrorMessage = ex?.originalError?.["message"] ?? "system error";
 
