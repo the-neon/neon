@@ -123,10 +123,10 @@ class PostgresDB {
   }
 
   public async getMany<T>(sql: string, args?: any[]): Promise<T[]> {
-    const model = await this.queryAsJson(sql, args);
+    const model = await this.query(sql, args);
 
     if (model && model?.["rowCount"] > 0) {
-      return model?.["rows"].map((row) => this.castRow(row.item)) as T[];
+      return model?.["rows"].map((row) => this.castRow(row)) as T[];
     }
 
     return [] as T[];

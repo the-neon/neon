@@ -5,6 +5,7 @@
 import { SourceFile, Node, SyntaxKind, forEachChild } from "typescript";
 
 import chalk from "chalk";
+import Mapper from "./Mapper";
 
 enum BuiltinType {
   String = "String",
@@ -25,23 +26,6 @@ interface TypeInterface {
   name: string;
   props: TypeProp[];
 }
-
-// const getQlTypeFromTsType = tstype => {
-//   switch (tstype) {
-//     case SyntaxKind.StringKeyword:
-//       return 'String';
-//     case SyntaxKind.BooleanKeyword:
-//       return 'Boolean';
-//     case SyntaxKind.ObjectKeyword:
-//       return 'JSON';
-//     case SyntaxKind.NumberKeyword:
-//       return 'Int';
-
-//     case SyntaxKind.AnyKeyword:
-//     default:
-//       return 'JSON';
-//   }
-// };
 
 const camelize = (str: string) => {
   return str
@@ -169,30 +153,7 @@ class Delinter {
         });
 
         const methodName = node["name"].escapedText;
-        let responseType;
-
-        if (!node["type"] || !node["type"].typeArguments) {
-          responseType = "JSON";
-        } else if (
-          node["type"].typeArguments[0].kind === SyntaxKind.TupleType
-        ) {
-          responseType = `[${node["type"].typeArguments[0].elementTypes[0].typeName.escapedText}]`;
-        } else if (
-          node["type"].typeArguments[0].kind === SyntaxKind.ArrayType
-        ) {
-          responseType = `[${node["type"].typeArguments[0].elementType.typeName.escapedText}]`;
-        } else if (
-          node["type"].typeArguments[0].kind === SyntaxKind.AnyKeyword
-        ) {
-          responseType = "JSON";
-        } else {
-          try {
-            responseType = node["type"].typeArguments[0].typeName.escapedText;
-          } catch (ex) {
-            console.log(ex.message);
-            console.log(node["type"]);
-          }
-        }
+        const responseType = Mapper.mapType(node["type"].typeArguments[0]);
 
         const params: any[] = [];
 
@@ -215,6 +176,7 @@ class Delinter {
             }
 
             if (!paramType) {
+              paramType = Mapper.mapType(param);
               try {
                 if (!param.type) {
                   paramType = "JSON";

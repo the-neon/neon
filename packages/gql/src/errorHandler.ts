@@ -6,14 +6,70 @@ import {
   UserInputError,
 } from "apollo-server";
 import { GraphQLError } from "graphql";
+import { ApplicationError, ErrorPrefix } from "@the-neon/core";
+
+const tryParse = (str: string): Error[] | null | undefined => {
+  try {
+    const result = JSON.parse(str);
+    if (result.type === "ApplicationError") {
+      return result as ApplicationError;
+    }
+    return result as Error[];
+  } catch {
+    null;
+  }
+};
+
+const handleApplicationError = (
+  errors: ApplicationError[],
+  message: string
+) => {
+  if (errors.some((e) => e.prefix === ErrorPrefix.Authentication)) {
+    return new AuthenticationError(message);
+  }
+  if (errors.some((e) => e.prefix === ErrorPrefix.Authorization)) {
+    return new ForbiddenError(message);
+  }
+
+  if (errors.some((e) => e.prefix === ErrorPrefix.NotSupportedAppVersion)) {
+    return new ApolloError(
+      "Not supported Application!",
+      ErrorPrefix.NotSupportedAppVersion
+    );
+  }
+
+  if (errors.length === 1) {
+    const [originalError] = errors;
+    return new UserInputError(message, {
+      affected: originalError.affected,
+      code: originalError.prefix,
+      message: originalError.message || originalError._message,
+      severity: "error",
+    });
+  }
+
+  const inputs = errors.map((e) => ({
+    affected: e.affected,
+    code: e.prefix,
+    message: e.message || e._message,
+  }));
+  const code = [...new Set(errors.map((e) => e.prefix))].join("_");
+  return new UserInputError(message, {
+    code,
+    inputs,
+    severity: "error",
+  });
+};
 
 const errorHandler = (ex: GraphQLError): Error => {
-  console.error(JSON.stringify(ex));
-  const originalErrorType = ex?.originalError?.["type"];
-  const originalErrorMessage = ex?.originalError?.["message"];
+  const originalErrorType = ex?.originalError?.["type"] ?? null;
+  const originalErrorMessage = ex?.originalError?.["message"] ?? "system error";
 
-  if (!originalErrorType || !originalErrorMessage) {
-    return new Error();
+  if (!originalErrorType && originalErrorMessage) {
+    const errors = tryParse(originalErrorMessage);
+    if (errors?.length) {
+      return handleApplicationError(errors, "");
+    }
   }
 
   switch (originalErrorType) {
@@ -21,16 +77,26 @@ const errorHandler = (ex: GraphQLError): Error => {
       return new ForbiddenError(originalErrorMessage);
     case "AuthenticationError":
       return new AuthenticationError(originalErrorMessage);
+
+    case "ApplicationError":
+      return handleApplicationError([ex.originalError], originalErrorMessage);
+
     case "InputError": {
       const errors = ex.originalError?.["errors"];
       if (!errors) {
         return new UserInputError(originalErrorMessage, { severity: "error" });
       }
+
+      const inputs = errors.map(({ key, message }) => ({
+        field: key,
+        message: message,
+      }));
+
+      if (inputs.length === 1 && !inputs[0].field) {
+        return new UserInputError(inputs[0].message, { severity: "error" });
+      }
       return new UserInputError(originalErrorMessage, {
-        inputs: Object.keys(errors).map((key) => ({
-          field: key,
-          message: errors[key],
-        })),
+        inputs,
         severity: "error",
       });
     }

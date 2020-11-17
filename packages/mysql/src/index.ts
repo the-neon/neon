@@ -6,7 +6,7 @@ import mysql2 from "mysql2";
 
 class MySqlDb {
   private transaction?: Transaction;
-  private connection: Sequelize;
+  public connection: Sequelize;
 
   constructor() {
     this.connection = new Sequelize(
@@ -134,14 +134,20 @@ class MySqlDb {
   }
 
   async update<T>(
-    table: string,
+    sqlOrTable: string,
     condition: Record<string, unknown>,
     columns: Record<string, unknown>
   ): Promise<T> {
+    if (sqlOrTable.toLowerCase().includes("update ")) {
+      return this.execute(sqlOrTable, condition, QueryTypes.UPDATE) as Promise<
+        T
+      >;
+    }
+
     const keys = Object.keys(columns);
     const conditionKeys = Object.keys(condition);
 
-    const sql = `UPDATE ${table} SET 
+    const sql = `UPDATE ${sqlOrTable} SET 
       ${keys.map((k) => `${snakeCase(k)} = :${k}`).join(", ")}
       WHERE ${conditionKeys
         .map((k) => `${snakeCase(k)} = :${k}`)
@@ -157,7 +163,7 @@ class MySqlDb {
     sqlOrTable: string,
     condition: Record<string, unknown>
   ): Promise<unknown> {
-    if (sqlOrTable.toLowerCase().includes("select")) {
+    if (sqlOrTable.toLowerCase().includes("delete ")) {
       return this.execute(sqlOrTable, condition, QueryTypes.DELETE);
     }
     const keys = Object.keys(condition);

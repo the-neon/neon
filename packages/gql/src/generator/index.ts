@@ -22,7 +22,7 @@ import {
 import chalk from "chalk";
 
 import { resolveConfig } from "./config";
-import FileService from "./FileService";
+import GraphQlApiClientGenerator from "./GraphQlApiClientGenerator";
 import Mapper, { BuiltinType } from "./Mapper";
 
 interface TypeProp {
@@ -178,15 +178,9 @@ const delint = (sourceFile: SourceFile) => {
 
       if (!node["type"] || !node["type"].typeArguments) {
         responseType = "JSON";
-      } else if (node["type"].typeArguments[0].kind === SyntaxKind.TupleType) {
-        responseType = `[${node["type"].typeArguments[0].elementTypes[0].typeName.escapedText}]`;
-      } else if (node["type"].typeArguments[0].kind === SyntaxKind.ArrayType) {
-        responseType = `[${node["type"].typeArguments[0].elementType.typeName.escapedText}]`;
-      } else if (node["type"].typeArguments[0].kind === SyntaxKind.AnyKeyword) {
-        responseType = "JSON";
       } else {
         try {
-          responseType = node["type"].typeArguments[0].typeName.escapedText;
+          responseType = Mapper.mapType(node["type"].typeArguments[0]);
         } catch (ex) {
           console.log(ex.message);
           console.log(node["type"]);
@@ -373,7 +367,9 @@ const delint = (sourceFile: SourceFile) => {
                     break;
                   default:
                     member.typeName = element.type.typeName.escapedText;
-                    member.scalar = false;
+                    member.scalar = enums.some(
+                      (e) => e.name === element.type.typeName.escapedText
+                    );
                     break;
                 }
               }
@@ -704,7 +700,7 @@ writeFileSync(schemapath, schema.join("\n"));
 writeFileSync(resolverspath, lines.join("\n"));
 
 if (config.outApiClient) {
-  FileService.generateFiles(
+  GraphQlApiClientGenerator.generateFiles(
     queries,
     mutations,
     inter,
