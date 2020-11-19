@@ -384,8 +384,9 @@ const delint = (sourceFile: SourceFile) => {
                 ) {
                   member.typeName = "[Int]";
                   member.scalar = true;
-                }
-                if (element.type.elementType.typeName.escapedText === "float") {
+                } else if (
+                  element.type.elementType.typeName.escapedText === "float"
+                ) {
                   member.typeName = "[Float]";
                   member.scalar = true;
                 } else {

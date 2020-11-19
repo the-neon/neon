@@ -406,6 +406,12 @@ class Delinter {
                     element.type.elementType.typeName.escapedText === "integer"
                   ) {
                     member.typeName = "[Int]";
+                    member.scalar = true;
+                  } else if (
+                    element.type.elementType.typeName.escapedText === "float"
+                  ) {
+                    member.typeName = "[Float]";
+                    member.scalar = true;
                   } else {
                     member.typeName = `[${element.type.elementType.typeName.escapedText}]`;
                   }
