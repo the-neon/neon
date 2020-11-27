@@ -42,6 +42,8 @@ export const apiCall = async ({ query, variables, fragments }) => {
     const errors = e.errors.map(({ extensions, message }) => ({
       message,
       inputs: extensions?.inputs,
+      affected: extensions?.affected,
+      reason: extensions?.reason,
     }));
 
     return { success: false, errors };

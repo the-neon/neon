@@ -41,11 +41,13 @@ describe("Error handler tests", () => {
         affected: ["email"],
         code: ErrorPrefix.InputValidationInvalidFormat,
         message: "",
+        reason: ErrorPrefix.InputValidationInvalidFormat,
       },
       {
         affected: ["email"],
         code: ErrorPrefix.InputValidationRequired,
         message: "",
+        reason: ErrorPrefix.InputValidationRequired,
       },
     ]);
   });
@@ -86,11 +88,13 @@ describe("Error handler tests", () => {
         affected: ["email"],
         code: ErrorPrefix.InputValidationInvalidFormat,
         message: sampleMessage,
+        reason: ErrorPrefix.InputValidationInvalidFormat,
       },
       {
         affected: ["email"],
         code: ErrorPrefix.InputValidationRequired,
         message: sampleMessage,
+        reason: ErrorPrefix.InputValidationRequired,
       },
     ]);
   });

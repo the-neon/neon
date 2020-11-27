@@ -43,6 +43,7 @@ const handleApplicationError = (
     return new UserInputError(message, {
       affected: originalError.affected,
       code: originalError.prefix,
+      reason: originalError.prefix,
       message: originalError.message || originalError._message,
       severity: "error",
     });
@@ -51,11 +52,13 @@ const handleApplicationError = (
   const inputs = errors.map((e) => ({
     affected: e.affected,
     code: e.prefix,
+    reason: e.prefix,
     message: e.message || e._message,
   }));
   const code = [...new Set(errors.map((e) => e.prefix))].join("_");
   return new UserInputError(message, {
     code,
+    reason: code,
     inputs,
     severity: "error",
   });
