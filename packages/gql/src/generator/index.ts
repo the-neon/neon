@@ -379,7 +379,15 @@ const delint = (sourceFile: SourceFile) => {
             case SyntaxKind.ArrayType: {
               try {
                 member.scalar = false;
-                if (
+
+                if (element.type.elementType.kind === SyntaxKind.AnyKeyword) {
+                  member.typeName = "JSON";
+                } else if (
+                  element.type.elementType.kind === SyntaxKind.StringKeyword
+                ) {
+                  member.typeName = "[String]";
+                  member.scalar = true;
+                } else if (
                   element.type.elementType.typeName.escapedText === "integer"
                 ) {
                   member.typeName = "[Int]";
