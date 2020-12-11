@@ -1,5 +1,5 @@
 import { parse as uuidParse } from "uuid";
-
+import { integer, float } from "@the-neon/core";
 export class Valid {
   public static uuid(argValue: string): boolean {
     if (argValue) {
@@ -40,5 +40,11 @@ export class Valid {
 
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
+  }
+
+  public static greaterThanZero(
+    argValue: string | number | integer | float
+  ): boolean {
+    return +argValue > 0;
   }
 }

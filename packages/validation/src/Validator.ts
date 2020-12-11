@@ -4,6 +4,7 @@ export enum Validator {
   notEmpty,
   email,
   uuid,
+  greaterThanZero,
 }
 
 export interface ValidationFunction {
