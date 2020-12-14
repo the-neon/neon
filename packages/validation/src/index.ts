@@ -151,6 +151,18 @@ export function Validate(
                   }
                   break;
 
+                case Validator.greaterThanZero:
+                  if (!Valid.greaterThanZero(argValue)) {
+                    validationErrors.push(
+                      new ApplicationError(
+                        ErrorPrefix.InputValidationSmallerThan,
+                        key,
+                        `'${key}'is smaller or equal to 0`
+                      )
+                    );
+                  }
+                  break;
+
                 default:
                   validationErrors.push(
                     new ApplicationError(
