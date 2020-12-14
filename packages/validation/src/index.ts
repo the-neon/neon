@@ -157,7 +157,7 @@ export function Validate(
                       new ApplicationError(
                         ErrorPrefix.InputValidationSmallerThan,
                         key,
-                        `'${key}'is smaller than 0`
+                        `'${key}'is smaller or equal to 0`
                       )
                     );
                   }
