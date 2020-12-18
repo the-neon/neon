@@ -49,10 +49,11 @@ class MySqlDb {
   async execute(
     sql: string,
     params?: Record<string, unknown>,
-    queryType = QueryTypes.SELECT
+    queryType = QueryTypes.SELECT,
+    conn?: Sequelize
   ): Promise<Record<string, unknown> | Record<string, unknown>[] | unknown> {
     try {
-      const rows = (await this.connection.query(sql, {
+      const rows = (await (conn || this.connection).query(sql, {
         replacements: params,
         type: queryType,
         transaction: this.transaction,
@@ -88,11 +89,12 @@ class MySqlDb {
 
   async getOne<T>(
     sqlOrTable: string,
-    params?: Record<string, unknown>
+    params?: Record<string, unknown>,
+    conn?: Sequelize
   ): Promise<T> {
     let results;
     if (sqlOrTable.toLowerCase().includes("select")) {
-      results = await this.execute(sqlOrTable, params);
+      results = await this.execute(sqlOrTable, params, QueryTypes.SELECT, conn);
     } else {
       let condition = "";
       if (params) {
@@ -101,17 +103,28 @@ class MySqlDb {
           .join(" AND ")}`;
       }
       const generatedSql = `SELECT * FROM ${sqlOrTable} ${condition}`;
-      results = await this.execute(generatedSql, params);
+      results = await this.execute(
+        generatedSql,
+        params,
+        QueryTypes.SELECT,
+        conn
+      );
     }
     return results?.[0];
   }
 
   async getMany<T>(
     sqlOrTable: string,
-    params?: Record<string, unknown>
+    params?: Record<string, unknown>,
+    conn?: Sequelize
   ): Promise<T[]> {
     if (sqlOrTable.toLowerCase().includes("select")) {
-      return this.execute(sqlOrTable, params) as Promise<T[]>;
+      return this.execute(
+        sqlOrTable,
+        params,
+        QueryTypes.SELECT,
+        conn
+      ) as Promise<T[]>;
     }
 
     let condition = "";
@@ -121,27 +134,40 @@ class MySqlDb {
         .join(" AND ")}`;
     }
     const generatedSql = `SELECT * FROM ${sqlOrTable} ${condition}`;
-    return this.execute(generatedSql, params) as Promise<T[]>;
+    return this.execute(
+      generatedSql,
+      params,
+      QueryTypes.SELECT,
+      conn
+    ) as Promise<T[]>;
   }
 
-  async insert<T>(table: string, columns: Record<string, unknown>): Promise<T> {
+  async insert<T>(
+    table: string,
+    columns: Record<string, unknown>,
+    conn?: Sequelize
+  ): Promise<T> {
     const keys = Object.keys(columns);
     const sql = `INSERT INTO 
       ${table} (${keys.map((a) => `${snakeCase(a)}`)}) 
       VALUES (${keys.map((key) => `:${key}`)})`;
 
-    return this.execute(sql, columns, QueryTypes.INSERT) as Promise<T>;
+    return this.execute(sql, columns, QueryTypes.INSERT, conn) as Promise<T>;
   }
 
   async update<T>(
     sqlOrTable: string,
     condition: Record<string, unknown>,
-    columns: Record<string, unknown>
+    columns: Record<string, unknown>,
+    conn?: Sequelize
   ): Promise<T> {
     if (sqlOrTable.toLowerCase().includes("update ")) {
-      return this.execute(sqlOrTable, condition, QueryTypes.UPDATE) as Promise<
-        T
-      >;
+      return this.execute(
+        sqlOrTable,
+        condition,
+        QueryTypes.UPDATE,
+        conn
+      ) as Promise<T>;
     }
 
     const keys = Object.keys(columns);
@@ -155,22 +181,24 @@ class MySqlDb {
     return this.execute(
       sql,
       { ...condition, ...columns },
-      QueryTypes.UPDATE
+      QueryTypes.UPDATE,
+      conn
     ) as Promise<T>;
   }
 
   async delete(
     sqlOrTable: string,
-    condition: Record<string, unknown>
+    condition: Record<string, unknown>,
+    conn?: Sequelize
   ): Promise<unknown> {
     if (sqlOrTable.toLowerCase().includes("delete ")) {
-      return this.execute(sqlOrTable, condition, QueryTypes.DELETE);
+      return this.execute(sqlOrTable, condition, QueryTypes.DELETE, conn);
     }
     const keys = Object.keys(condition);
     const sql = `DELETE FROM ${sqlOrTable} WHERE ${keys
       .map((k) => `${snakeCase(k)} = :${k}`)
       .join(" AND ")}`;
-    return this.execute(sql, condition, QueryTypes.DELETE);
+    return this.execute(sql, condition, QueryTypes.DELETE, conn);
   }
 
   private castRow(row) {
