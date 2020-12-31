@@ -46,6 +46,22 @@ class MySqlDb {
     }
   }
 
+  getTransaction(conn: Sequelize): Transaction | undefined {
+    if (!this.transaction) {
+      return undefined;
+    }
+    const connDatabase = conn.config.database;
+    const connHost = conn.config.host;
+
+    const tranDatabase = this.transaction["connection"].config.database;
+    const tranHost = this.transaction["connection"].config.host;
+
+    if (connDatabase === tranDatabase && connHost === tranHost) {
+      return this.transaction;
+    }
+    return undefined;
+  }
+
   async execute(
     sql: string,
     params?: Record<string, unknown>,
@@ -53,10 +69,11 @@ class MySqlDb {
     conn?: Sequelize
   ): Promise<Record<string, unknown> | Record<string, unknown>[] | unknown> {
     try {
-      const rows = (await (conn || this.connection).query(sql, {
+      const activeConnection = conn || this.connection;
+      const rows = (await activeConnection.query(sql, {
         replacements: params,
         type: queryType,
-        transaction: this.transaction,
+        transaction: this.getTransaction(activeConnection),
       })) as unknown[];
 
       if (queryType === QueryTypes.SELECT) {
