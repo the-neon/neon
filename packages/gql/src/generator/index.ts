@@ -513,10 +513,10 @@ createInputs(queries);
 createInputs(mutations);
 
 imports.push(`import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date';
-  import GraphQLJSON from 'graphql-type-json';
-  import GraphQLLong from 'graphql-type-long';
-  import { DataSource } from 'apollo-datasource';
-  `);
+import GraphQLJSON from 'graphql-type-json';
+import GraphQLLong from 'graphql-type-long';
+import { DataSource } from 'apollo-datasource';
+`);
 
 classes.forEach((cls) => {
   if (cls.methods) {
@@ -608,6 +608,7 @@ lines.push(`
     Date: GraphQLDate,
     DateTime: GraphQLDateTime,
     JSON: GraphQLJSON,
+    Long: GraphQLLong,
   };
   `);
 
