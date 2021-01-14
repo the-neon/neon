@@ -530,30 +530,30 @@ lines.push("/* eslint-disable max-len */");
 imports.forEach((imp) => lines.push(imp));
 lines.push(`
   
-  class GqlDataSource extends DataSource {
-    private apiType: any;
-    private instance: any;
-    private appContext: any;
-  
-    constructor(apiType) {
-      super();
-      this.apiType = apiType;
-    }
-  
-    initialize?(config) {
-      this.instance = null;
-      this.appContext = config?.context?.appContext;
-    }
-  
-    call(method, ...args) {
-      if (!this.instance) {
-        this.instance = new this.apiType(this.appContext);
-      }
-      return this.instance?.[method](...args);
-    }
+class GqlDataSource extends DataSource {
+  private apiType: any;
+  private instance: any;
+  private appContext: any;
+
+  constructor(apiType) {
+    super();
+    this.apiType = apiType;
   }
+
+  initialize?(config) {
+    this.instance = null;
+    this.appContext = config?.context?.appContext;
+  }
+
+  call(method, ...args) {
+    if (!this.instance) {
+      this.instance = new this.apiType(this.appContext);
+    }
+    return this.instance?.[method](...args);
+  }
+}
   
-  `);
+`);
 lines.push(`export const APISources = {`);
 
 let tbs = "  ";
