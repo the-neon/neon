@@ -12,6 +12,7 @@ enum BuiltinType {
   Boolean = "Boolean",
   Float = "Float",
   Int = "Int",
+  Long = "Long",
   Date = "Date",
   DateTime = "DateTime",
   Json = "JSON",
@@ -190,6 +191,10 @@ class Delinter {
                   ) {
                     paramType = `[${BuiltinType.Int}]`;
                   } else if (
+                    param["type"].elementType.typeName.escapedText === "long"
+                  ) {
+                    paramType = `[${BuiltinType.Long}]`;
+                  } else if (
                     param["type"].elementType.typeName.escapedText === "float"
                   ) {
                     paramType = `[${BuiltinType.Float}]`;
@@ -212,6 +217,9 @@ class Delinter {
                       break;
                     case "integer":
                       paramType = BuiltinType.Int;
+                      break;
+                    case "long":
+                      paramType = BuiltinType.Long;
                       break;
                     case "float":
                       paramType = BuiltinType.Float;
@@ -366,11 +374,14 @@ class Delinter {
                   : "";
                 switch (typeName) {
                   case "integer":
-                    member.typeName = "Int";
+                    member.typeName = BuiltinType.Int;
+                    break;
+                  case "long":
+                    member.typeName = BuiltinType.Long;
                     break;
                   case "float":
                   default:
-                    member.typeName = "Float";
+                    member.typeName = BuiltinType.Float;
                     break;
                 }
 
@@ -406,6 +417,11 @@ class Delinter {
                     element.type.elementType.typeName.escapedText === "integer"
                   ) {
                     member.typeName = "[Int]";
+                    member.scalar = true;
+                  } else if (
+                    element.type.elementType.typeName.escapedText === "long"
+                  ) {
+                    member.typeName = "[Long]";
                     member.scalar = true;
                   } else if (
                     element.type.elementType.typeName.escapedText === "float"

@@ -5,6 +5,7 @@ enum BuiltinType {
   Boolean = "Boolean",
   Float = "Float",
   Int = "Int",
+  Long = "Long",
   Date = "Date",
   DateTime = "DateTime",
   Json = "JSON",
@@ -21,6 +22,8 @@ class Mapper {
           paramType = BuiltinType.Json;
         } else if (type?.elementType?.typeName?.escapedText === "integer") {
           paramType = `[${BuiltinType.Int}]`;
+        } else if (type?.elementType?.typeName?.escapedText === "long") {
+          paramType = `[${BuiltinType.Long}]`;
         } else if (type?.elementType?.typeName?.escapedText === "float") {
           paramType = `[${BuiltinType.Float}]`;
         } else if (type?.elementType?.typeName?.escapedText) {
@@ -45,6 +48,9 @@ class Mapper {
             break;
           case "integer":
             paramType = BuiltinType.Int;
+            break;
+          case "long":
+            paramType = BuiltinType.Long;
             break;
           case "float":
             paramType = BuiltinType.Float;

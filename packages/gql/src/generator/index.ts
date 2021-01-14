@@ -341,11 +341,14 @@ const delint = (sourceFile: SourceFile) => {
                 : "";
               switch (typeName) {
                 case "integer":
-                  member.typeName = "Int";
+                  member.typeName = BuiltinType.Int;
+                  break;
+                case "long":
+                  member.typeName = BuiltinType.Long;
                   break;
                 case "float":
                 default:
-                  member.typeName = "Float";
+                  member.typeName = BuiltinType.Float;
                   break;
               }
 
@@ -360,10 +363,13 @@ const delint = (sourceFile: SourceFile) => {
               } else {
                 switch (element.type.typeName.escapedText) {
                   case "integer":
-                    member.typeName = "Int";
+                    member.typeName = BuiltinType.Int;
+                    break;
+                  case "long":
+                    member.typeName = BuiltinType.Long;
                     break;
                   case "float":
-                    member.typeName = "Float";
+                    member.typeName = BuiltinType.Float;
                     break;
                   default:
                     member.typeName = element.type.typeName.escapedText;
@@ -391,6 +397,11 @@ const delint = (sourceFile: SourceFile) => {
                   element.type.elementType.typeName.escapedText === "integer"
                 ) {
                   member.typeName = "[Int]";
+                  member.scalar = true;
+                } else if (
+                  element.type.elementType.typeName.escapedText === "long"
+                ) {
+                  member.typeName = "[Long]";
                   member.scalar = true;
                 } else if (
                   element.type.elementType.typeName.escapedText === "float"
@@ -502,7 +513,8 @@ createInputs(queries);
 createInputs(mutations);
 
 imports.push(`import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date';
-  import GraphQLJSON from 'graphql-type-json'
+  import GraphQLJSON from 'graphql-type-json';
+  import GraphQLLong from 'graphql-type-long';
   import { DataSource } from 'apollo-datasource';
   `);
 
