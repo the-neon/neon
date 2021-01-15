@@ -615,15 +615,16 @@ lines.push(`
 const schema: string[] = [];
 
 schema.push(`
-  import { gql } from 'apollo-server-lambda';
-  
-  export const typeDefs = gql\`
-  directive @auth(roles: String) on FIELD_DEFINITION
-  
-  scalar JSON
-  scalar Date
-  scalar DateTime
-  `);
+import { gql } from 'apollo-server-lambda';
+
+export const typeDefs = gql\`
+directive @auth(roles: String) on FIELD_DEFINITION
+
+scalar JSON
+scalar Date
+scalar DateTime
+scalar Long
+`);
 
 enums.forEach((en) => {
   schema.push(`${tbs}enum ${en.name} {`);
