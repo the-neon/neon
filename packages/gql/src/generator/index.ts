@@ -657,7 +657,9 @@ inter.forEach((ifc) => {
 
   schema.push(
     `${tbs}${ifc.kind || "type"} ${ifc.name}${
-      ifc.implements ? " implements " + ifc.implements : ""
+      ifc.implements && ifc.kind === "type"
+        ? " implements " + ifc.implements
+        : ""
     } {`
   );
   tbs = "  ";
