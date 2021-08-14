@@ -19,7 +19,7 @@
     "lib": "lib"
   },
   "peerDependencies": {
-    "@the-neon/core": "file:../core"
+    "@the-neon/core": "*"
   },
   "dependencies": {
     "uuid": "^8.3.1"

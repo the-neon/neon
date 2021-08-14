@@ -12,7 +12,7 @@
     "neon": "bin/neon.js"
   },
   "peerDependencies": {
-    "@the-neon/core": "file:../core"
+    "@the-neon/core": "*"
   },
   "dependencies": {
     "apollo-server": "^2.16.1",
@@ -31,7 +31,6 @@
   "directories": {
     "lib": "lib"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "jest --coverage"
   },
