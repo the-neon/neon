@@ -12,8 +12,7 @@
     //   "forceConsistentCasingInFileNames": true,
     //   "pretty": true,
     //   "resolveJsonModule": true,
-    "noImplicitAny": false,
-    "allowArgumentsExplicitlyTypedAsAny": true
+    "noImplicitAny": false
   },
   "exclude": ["node_modules", "lib", "typings/**", "**/*.test.*"]
 }
