@@ -1,7 +1,7 @@
 {
   "name": "@the-neon/gql",
   "main": "lib/index.js",
-  "version": "0.0.40",
+  "version": "0.0.47",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -12,15 +12,16 @@
     "neon": "bin/neon.js"
   },
   "peerDependencies": {
-    "@the-neon/core": "file:../core"
+    "@the-neon/core": "*"
   },
   "dependencies": {
     "apollo-server": "^2.16.1",
     "chalk": "^4.1.0",
     "graphql": "^15.3.0",
     "graphql-iso-date": "^3.6.1",
-    "graphql-tools": "^6.1.0",
+    "graphql-tools": "6.1.0",
     "graphql-type-json": "^0.3.2",
+    "graphql-type-long": "^0.1.1",
     "json5": "^2.1.3"
   },
   "bugs": {
@@ -30,7 +31,6 @@
   "directories": {
     "lib": "lib"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "jest --coverage"
   },

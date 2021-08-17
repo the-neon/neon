@@ -1,3 +1,7 @@
+/*eslint @typescript-eslint/no-explicit-any: "off"*/
+/*@typescript-eslint/explicit-module-boundary-types: "off"*/
+
+
 import { Pool, PoolClient } from "pg";
 
 // import { IAppContext } from '../../core/Context';
@@ -17,6 +21,7 @@ interface SortRequest {
 
 class PostgresDB {
   transaction = false;
+  _client?: PoolClient;
 
   private static pool;
   private connectionString: string;
@@ -60,10 +65,11 @@ class PostgresDB {
       const resp = db.query(sql, args);
       return resp;
     } catch (ex) {
-      // console.error("exelption :", ex);
+      console.error("DB Exception: ", ex);
     } finally {
-      if (db && !this.transaction) {
+      if (db && !this.transaction && this._client) {
         db.release();
+        this._client = undefined;
       }
     }
   }
@@ -289,10 +295,21 @@ class PostgresDB {
         connectionString: this.connectionString,
         connectionTimeoutMillis: 2000,
       });
+
+      PostgresDB.pool.on("error", (err) => { });
+      PostgresDB.pool.on("connect", (client) => {
+        client.query("SET search_path TO public");
+      });
+      PostgresDB.pool.on("disconnect", (client) => {
+        client = null;
+      });
     }
 
-    const client = await PostgresDB.pool.connect();
-    return client;
+    if (!this._client) {
+      this._client = await PostgresDB.pool.connect();
+    }
+
+    return this._client as PoolClient;
   }
 
   private sanitize(table: string) {

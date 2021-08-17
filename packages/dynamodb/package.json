@@ -9,7 +9,7 @@
     "directory": "packages/dynamodb"
   },
   "peerDependencies": {
-    "@the-neon/core": "file:../core",
+    "@the-neon/core": "*",
     "aws-sdk": "^2.768.0"
   },
   "bugs": {
@@ -19,7 +19,6 @@
   "directories": {
     "lib": "lib"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

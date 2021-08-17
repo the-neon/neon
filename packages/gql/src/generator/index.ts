@@ -341,11 +341,14 @@ const delint = (sourceFile: SourceFile) => {
                 : "";
               switch (typeName) {
                 case "integer":
-                  member.typeName = "Int";
+                  member.typeName = BuiltinType.Int;
+                  break;
+                case "long":
+                  member.typeName = BuiltinType.Long;
                   break;
                 case "float":
                 default:
-                  member.typeName = "Float";
+                  member.typeName = BuiltinType.Float;
                   break;
               }
 
@@ -360,10 +363,13 @@ const delint = (sourceFile: SourceFile) => {
               } else {
                 switch (element.type.typeName.escapedText) {
                   case "integer":
-                    member.typeName = "Int";
+                    member.typeName = BuiltinType.Int;
+                    break;
+                  case "long":
+                    member.typeName = BuiltinType.Long;
                     break;
                   case "float":
-                    member.typeName = "Float";
+                    member.typeName = BuiltinType.Float;
                     break;
                   default:
                     member.typeName = element.type.typeName.escapedText;
@@ -391,6 +397,11 @@ const delint = (sourceFile: SourceFile) => {
                   element.type.elementType.typeName.escapedText === "integer"
                 ) {
                   member.typeName = "[Int]";
+                  member.scalar = true;
+                } else if (
+                  element.type.elementType.typeName.escapedText === "long"
+                ) {
+                  member.typeName = "[Long]";
                   member.scalar = true;
                 } else if (
                   element.type.elementType.typeName.escapedText === "float"
@@ -502,9 +513,10 @@ createInputs(queries);
 createInputs(mutations);
 
 imports.push(`import { GraphQLDate, GraphQLDateTime } from 'graphql-iso-date';
-  import GraphQLJSON from 'graphql-type-json'
-  import { DataSource } from 'apollo-datasource';
-  `);
+import GraphQLJSON from 'graphql-type-json';
+import GraphQLLong from 'graphql-type-long';
+import { DataSource } from 'apollo-datasource';
+`);
 
 classes.forEach((cls) => {
   if (cls.methods) {
@@ -518,30 +530,30 @@ lines.push("/* eslint-disable max-len */");
 imports.forEach((imp) => lines.push(imp));
 lines.push(`
   
-  class GqlDataSource extends DataSource {
-    private apiType: any;
-    private instance: any;
-    private appContext: any;
-  
-    constructor(apiType) {
-      super();
-      this.apiType = apiType;
-    }
-  
-    initialize?(config) {
-      this.instance = null;
-      this.appContext = config?.context?.appContext;
-    }
-  
-    call(method, ...args) {
-      if (!this.instance) {
-        this.instance = new this.apiType(this.appContext);
-      }
-      return this.instance?.[method](...args);
-    }
+class GqlDataSource extends DataSource {
+  private apiType: any;
+  private instance: any;
+  private appContext: any;
+
+  constructor(apiType) {
+    super();
+    this.apiType = apiType;
   }
+
+  initialize?(config) {
+    this.instance = null;
+    this.appContext = config?.context?.appContext;
+  }
+
+  call(method, ...args) {
+    if (!this.instance) {
+      this.instance = new this.apiType(this.appContext);
+    }
+    return this.instance?.[method](...args);
+  }
+}
   
-  `);
+`);
 lines.push(`export const APISources = {`);
 
 let tbs = "  ";
@@ -596,21 +608,23 @@ lines.push(`
     Date: GraphQLDate,
     DateTime: GraphQLDateTime,
     JSON: GraphQLJSON,
+    Long: GraphQLLong,
   };
   `);
 
 const schema: string[] = [];
 
 schema.push(`
-  import { gql } from 'apollo-server-lambda';
-  
-  export const typeDefs = gql\`
-  directive @auth(roles: String) on FIELD_DEFINITION
-  
-  scalar JSON
-  scalar Date
-  scalar DateTime
-  `);
+import { gql } from 'apollo-server-lambda';
+
+export const typeDefs = gql\`
+directive @auth(roles: String) on FIELD_DEFINITION
+
+scalar JSON
+scalar Date
+scalar DateTime
+scalar Long
+`);
 
 enums.forEach((en) => {
   schema.push(`${tbs}enum ${en.name} {`);
@@ -643,7 +657,9 @@ inter.forEach((ifc) => {
 
   schema.push(
     `${tbs}${ifc.kind || "type"} ${ifc.name}${
-      ifc.implements ? " implements " + ifc.implements : ""
+      ifc.implements && ifc.kind === "type"
+        ? " implements " + ifc.implements
+        : ""
     } {`
   );
   tbs = "  ";

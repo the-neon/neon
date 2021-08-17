@@ -1,5 +1,5 @@
 import { parse as uuidParse } from "uuid";
-import { integer, float } from "@the-neon/core";
+import { integer, long, float } from "@the-neon/core";
 export class Valid {
   public static uuid(argValue: string): boolean {
     if (argValue) {
@@ -43,7 +43,7 @@ export class Valid {
   }
 
   public static greaterThanZero(
-    argValue: string | number | integer | float
+    argValue: string | number | integer | long | float
   ): boolean {
     return +argValue > 0;
   }
