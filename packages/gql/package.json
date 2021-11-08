@@ -15,7 +15,7 @@
     "@the-neon/core": "*"
   },
   "dependencies": {
-    "apollo-server": "^2.16.1",
+    "apollo-server": "^2.25.3",
     "chalk": "^4.1.0",
     "graphql": "^15.3.0",
     "graphql-iso-date": "^3.6.1",
