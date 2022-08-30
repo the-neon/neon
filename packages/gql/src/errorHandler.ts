@@ -137,7 +137,7 @@ const errorHandler = (ex: GraphQLError): Error => {
   }
 };
 
-const logError = (ex, configuration) => {
+const logError = (ex: any, configuration) => {
   const error = {
     path: "",
     message: "",

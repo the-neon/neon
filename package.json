@@ -3,8 +3,8 @@
   "version": "0.0.4",
   "private": true,
   "engines": {
-    "node": ">= 12.16.0",
-    "yarn": ">= 3.0.0"
+    "node": ">= 16.0.0",
+    "yarn": ">= 1.22.0"
   },
   "repository": "git@github.com:the-neon/neon.git",
   "author": "stojce <stojce@me.com>",

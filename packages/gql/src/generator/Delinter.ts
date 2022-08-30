@@ -2,7 +2,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
 
-import { SourceFile, Node, SyntaxKind, forEachChild } from "typescript";
+import {
+  SourceFile,
+  Node,
+  SyntaxKind,
+  forEachChild,
+  canHaveDecorators,
+  getDecorators,
+} from "typescript";
 
 import chalk from "chalk";
 import Mapper from "./Mapper";
@@ -77,9 +84,13 @@ class Delinter {
       let auth: any[] = [];
       let decoratorName = "";
 
-      if (node.decorators) {
+      const decorators = canHaveDecorators(node)
+        ? getDecorators(node)
+        : undefined;
+
+      if (decorators) {
         // support multiple
-        node.decorators.forEach((dec: Node) => {
+        decorators.forEach((dec: Node) => {
           let decName = "";
           if (dec["expression"].kind === SyntaxKind.CallExpression) {
             decName = dec["expression"].expression["escapedText"];
@@ -104,11 +115,10 @@ class Delinter {
                       const properties = element["properties"].reduce(
                         (result, prop) => {
                           if (prop.initializer.elements) {
-                            result[
-                              prop.name.escapedText
-                            ] = prop.initializer.elements.map(
-                              (x) => x.name.escapedText
-                            );
+                            result[prop.name.escapedText] =
+                              prop.initializer.elements.map(
+                                (x) => x.name.escapedText
+                              );
                           } else {
                             result[prop.name.escapedText] =
                               prop.initializer.name.escapedText;
@@ -235,7 +245,7 @@ class Delinter {
                       break;
                   }
                 }
-              } catch (ex) {
+              } catch (ex: any) {
                 console.log(ex.message);
                 console.log(param.type);
               }

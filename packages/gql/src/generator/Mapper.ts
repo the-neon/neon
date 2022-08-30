@@ -61,7 +61,7 @@ class Mapper {
             break;
         }
       }
-    } catch (ex) {
+    } catch (ex: any) {
       console.log(ex.message);
     }
     return paramType;

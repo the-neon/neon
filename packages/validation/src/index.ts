@@ -56,7 +56,7 @@ export function Validate(
           if (typeof fn === "function") {
             try {
               fn(args, this["context"]);
-            } catch (ex) {
+            } catch (ex: any) {
               validationErrors.push(
                 new ApplicationError(
                   ex.prefix || ErrorPrefix.InputValidation,
@@ -75,7 +75,7 @@ export function Validate(
             const localFn = domain[key] as Function;
             const { fn, args } = localFn();
             fn(params, args, arguments, this);
-          } catch (ex) {
+          } catch (ex: any) {
             validationErrors.push(
               new ApplicationError(
                 ex.prefix || ErrorPrefix.InputValidation,
@@ -96,15 +96,15 @@ export function Validate(
             `invalid validation key '${key}' on ${target.constructor.name}.${propertyKey}. Possible keys: ${params} `
           );
         } else {
-          const validators = (Array.isArray(domain[key])
-            ? domain[key]
-            : [domain[key]]) as Array<Validator | Function>;
+          const validators = (
+            Array.isArray(domain[key]) ? domain[key] : [domain[key]]
+          ) as Array<Validator | Function>;
 
           for (const validator of validators) {
             if (typeof validator === "function") {
               try {
                 validator(argValue, this);
-              } catch (ex) {
+              } catch (ex: any) {
                 validationErrors.push(
                   new ApplicationError(
                     ErrorPrefix.InputValidation,

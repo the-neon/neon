@@ -17,6 +17,8 @@ import {
   createSourceFile,
   ScriptTarget,
   ScriptKind,
+  canHaveDecorators,
+  getDecorators,
 } from "typescript";
 
 import chalk from "chalk";
@@ -97,9 +99,13 @@ const delint = (sourceFile: SourceFile) => {
     let auth: any[] = [];
     let decoratorName = "";
 
-    if (node.decorators) {
+    const decorators = canHaveDecorators(node)
+      ? getDecorators(node)
+      : undefined;
+
+    if (decorators) {
       // support multiple
-      node.decorators.forEach((dec: Node) => {
+      decorators.forEach((dec: Node) => {
         let decName = "";
         if (dec["expression"].kind === SyntaxKind.CallExpression) {
           decName = dec["expression"].expression["escapedText"];
@@ -124,11 +130,10 @@ const delint = (sourceFile: SourceFile) => {
                     const properties = element["properties"].reduce(
                       (result, prop) => {
                         if (prop.initializer.elements) {
-                          result[
-                            prop.name.escapedText
-                          ] = prop.initializer.elements.map(
-                            (x) => x.name.escapedText
-                          );
+                          result[prop.name.escapedText] =
+                            prop.initializer.elements.map(
+                              (x) => x.name.escapedText
+                            );
                         } else {
                           result[prop.name.escapedText] =
                             prop.initializer.name.escapedText;
@@ -181,7 +186,7 @@ const delint = (sourceFile: SourceFile) => {
       } else {
         try {
           responseType = Mapper.mapType(node["type"].typeArguments[0]);
-        } catch (ex) {
+        } catch (ex: any) {
           console.log(ex.message);
           console.log(node["type"]);
         }
