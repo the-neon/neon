@@ -1885,7 +1885,7 @@ apollo-server-types@^0.10.0:
     apollo-server-caching "^0.7.0"
     apollo-server-env "^3.2.0"
 
-apollo-server@^2.16.1:
+apollo-server@^2.25.3:
   version "2.26.0"
   resolved "https://registry.yarnpkg.com/apollo-server/-/apollo-server-2.26.0.tgz#21d4108d05f66aa328b07e46f044e923e54d0c92"
   integrity sha512-b5uyw3xP+7In2NMTfdw8/lEhl9m1UmwM46qIqhh6Lyx9EVqXNVOvOpOM+BUNTmk5lRKt9DefN7BqG93/ajI3OQ==
