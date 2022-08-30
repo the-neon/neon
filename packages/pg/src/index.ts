@@ -22,7 +22,7 @@ class PostgresDB {
   transaction = false;
   _client?: PoolClient;
 
-  private static pool;
+  private static pool: Pool;
   private connectionString: string;
 
   //   private ctx: IAppContext;
@@ -295,13 +295,12 @@ class PostgresDB {
         connectionTimeoutMillis: 2000,
       });
 
-      // PostgresDB.pool.on("error", (err) => {});
-      // PostgresDB.pool.on("connect", (client) => {
-      //   client.query("SET search_path TO public");
-      // });
-      // PostgresDB.pool.on("disconnect", (client) => {
-      //   client = null;
-      // });
+      PostgresDB.pool.on("error", () => {
+        return null;
+      });
+      PostgresDB.pool.on("connect", (client) => {
+        client.query("SET search_path TO public");
+      });
     }
 
     if (!this._client) {

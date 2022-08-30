@@ -17,6 +17,9 @@ jest.mock("pg", () => {
     connect: jest.fn(() => {
       return mockClient;
     }),
+    on: jest.fn(() => {
+      return null;
+    }),
   };
 
   return {

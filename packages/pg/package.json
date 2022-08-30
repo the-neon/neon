@@ -9,7 +9,7 @@
     "directory": "packages/pg"
   },
   "dependencies": {
-    "pg": "^8.3.2"
+    "pg": "^8.8.0"
   },
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
