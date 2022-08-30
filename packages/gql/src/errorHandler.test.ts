@@ -19,21 +19,16 @@ describe("Error handler tests", () => {
       new ApplicationError(ErrorPrefix.InputValidationInvalidFormat, ["email"]),
       new ApplicationError(ErrorPrefix.InputValidationRequired, ["email"]),
     ];
-    const graphQlError: GraphQLError = new GraphQLError(
-      sampleMessage,
-      null,
-      null,
-      null,
-      null,
-      new Error(JSON.stringify(errors))
-    );
+    const graphQlError: GraphQLError = new GraphQLError(sampleMessage, {
+      originalError: new Error(JSON.stringify(errors)),
+    });
 
     // Act
     const responseError = errorHandler(graphQlError) as UserInputError;
 
     // Assert
     expect(responseError).toBeDefined();
-    expect(responseError.code).toEqual(
+    expect(responseError.extensions.reason).toEqual(
       `${ErrorPrefix.InputValidationInvalidFormat}_${ErrorPrefix.InputValidationRequired}`
     );
     expect(responseError.extensions.inputs).toEqual([
@@ -80,7 +75,7 @@ describe("Error handler tests", () => {
 
     // Assert
     expect(responseError).toBeDefined();
-    expect(responseError.code).toEqual(
+    expect(responseError.extensions.reason).toEqual(
       `${ErrorPrefix.InputValidationInvalidFormat}_${ErrorPrefix.InputValidationRequired}`
     );
     expect(responseError.extensions.inputs).toEqual([
@@ -190,7 +185,7 @@ describe("Error handler tests", () => {
 
     // Assert
     expect(responseError).toBeDefined();
-    expect(responseError.code).toEqual(
+    expect(responseError.extensions.reason).toEqual(
       ErrorPrefix.InputValidationInvalidFormat
     );
     expect(responseError.message).toEqual(sampleMessage);

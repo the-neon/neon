@@ -11,7 +11,7 @@ import {
   getDecorators,
 } from "typescript";
 
-import chalk from "chalk";
+// import chalk from "chalk";
 import Mapper from "./Mapper";
 
 enum BuiltinType {
@@ -98,7 +98,7 @@ class Delinter {
             decName = dec["expression"]["escapedText"];
           }
 
-          console.log("\t", chalk.green(node?.["name"]?.["escapedText"]));
+          // console.log("\t", chalk.green(node?.["name"]?.["escapedText"]));
 
           // Set Auth decorator to GQL
           if (decName === "Auth") {

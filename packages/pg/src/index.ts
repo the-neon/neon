@@ -1,7 +1,6 @@
 /*eslint @typescript-eslint/no-explicit-any: "off"*/
 /*@typescript-eslint/explicit-module-boundary-types: "off"*/
 
-
 import { Pool, PoolClient } from "pg";
 
 // import { IAppContext } from '../../core/Context';
@@ -166,10 +165,10 @@ class PostgresDB {
       (_, ndx) => `$${ndx + 1}`
     )}) ${where}`;
 
-    const rows = (this.getMany(sql, [
+    const rows = this.getMany(sql, [
       ...ids,
       ...Object.values(filter ?? {}),
-    ]) as unknown) as T[];
+    ]) as unknown as T[];
     return rows;
   }
 
@@ -296,13 +295,13 @@ class PostgresDB {
         connectionTimeoutMillis: 2000,
       });
 
-      PostgresDB.pool.on("error", (err) => { });
-      PostgresDB.pool.on("connect", (client) => {
-        client.query("SET search_path TO public");
-      });
-      PostgresDB.pool.on("disconnect", (client) => {
-        client = null;
-      });
+      // PostgresDB.pool.on("error", (err) => {});
+      // PostgresDB.pool.on("connect", (client) => {
+      //   client.query("SET search_path TO public");
+      // });
+      // PostgresDB.pool.on("disconnect", (client) => {
+      //   client = null;
+      // });
     }
 
     if (!this._client) {

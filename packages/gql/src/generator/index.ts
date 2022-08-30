@@ -21,7 +21,7 @@ import {
   getDecorators,
 } from "typescript";
 
-import chalk from "chalk";
+// import chalk from "chalk";
 
 import { resolveConfig } from "./config";
 import GraphQlApiClientGenerator from "./GraphQlApiClientGenerator";
@@ -113,7 +113,7 @@ const delint = (sourceFile: SourceFile) => {
           decName = dec["expression"]["escapedText"];
         }
 
-        console.log("\t", chalk.green(node?.["name"]?.["escapedText"]));
+        // console.log("\t", chalk.green(node?.["name"]?.["escapedText"]));
 
         // Set Auth decorator to GQL
         if (decName === "Auth") {
@@ -473,7 +473,7 @@ config.inputDirs.forEach((directory) => {
 
   files.forEach((file) => {
     if (file.endsWith(".ts")) {
-      console.log(chalk.cyan(file));
+      // console.log(chalk.cyan(file));
       const fileName = path.join(directory, file);
       const sourceFile = createSourceFile(
         fileName,

@@ -1,17 +1,17 @@
 {
-  "extends": "@tsconfig/node12/tsconfig.json",
+  "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
     "composite": false,
     "outDir": "lib",
-    //   "strict": true,
-    //   "moduleResolution": "node",
-    //   "esModuleInterop": true,
-    //   "experimentalDecorators": true,
-    //   "emitDecoratorMetadata": true,
-    //   "skipLibCheck": true,
-    //   "forceConsistentCasingInFileNames": true,
-    //   "pretty": true,
-    //   "resolveJsonModule": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "pretty": true,
+    "resolveJsonModule": true,
     "noImplicitAny": false
   },
   "exclude": ["node_modules", "lib", "typings/**", "**/*.test.*"]
