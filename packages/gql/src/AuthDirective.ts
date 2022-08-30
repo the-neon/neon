@@ -65,7 +65,7 @@ class AuthDirective extends SchemaDirectiveVisitor {
                 permission.entity === "any" ||
                 (user.permissions[permission.entity] &
                   +Action[permission.action]) !==
-                0
+                  0
             )
             .reduce((a, b) => a && b, true);
         }

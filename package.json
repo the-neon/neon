@@ -13,7 +13,6 @@
   "scripts": {
     "test": "jest --coverage",
     "clean": "rm -rf dist",
-    "build:cli": "tsc -p ./packages/cli",
     "build:core": "tsc -p ./packages/core",
     "build:pg": "tsc -p ./packages/pg",
     "build:gql": "tsc -p ./packages/gql",
