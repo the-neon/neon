@@ -10,7 +10,7 @@
   },
   "peerDependencies": {
     "@the-neon/core": "*",
-    "aws-sdk": "^2.768.0"
+    "aws-sdk": "^2.1230.0"
   },
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
