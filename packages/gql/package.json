@@ -1,7 +1,7 @@
 {
   "name": "@the-neon/gql",
   "main": "lib/index.js",
-  "version": "0.1.2",
+  "version": "0.2.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,9 +17,9 @@
   "dependencies": {
     "apollo-server": "^3.10.2",
     "chalk": "^5.0.1",
-    "graphql": "^16.6.0",
+    "graphql": "^15.0.0",
     "graphql-iso-date": "^3.6.1",
-    "graphql-tools": "8.3.0",
+    "graphql-tools": "^7.0.0",
     "graphql-type-json": "^0.3.2",
     "graphql-type-long": "^0.1.1",
     "json5": "^2.2.1"

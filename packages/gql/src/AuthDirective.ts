@@ -23,7 +23,7 @@ class AuthDirective extends SchemaDirectiveVisitor {
   // the parent and grandparent types.
   public visitFieldDefinition(field, details) {
     this.ensureFieldsWrapped(details.objectType);
-    field._requiredAuthRoles = this.args.roles;
+    field._requiredAuthRoles = this["args"]?.roles;
   }
 
   public ensureFieldsWrapped(objectType) {
