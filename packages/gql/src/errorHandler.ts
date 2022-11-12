@@ -152,7 +152,7 @@ const logError = (ex: any, configuration) => {
     error.message = ex.message;
   }
 
-  console.error(JSON.stringify(error));
+  console?.error?.(JSON.stringify(error));
 };
 
 export default errorHandler;

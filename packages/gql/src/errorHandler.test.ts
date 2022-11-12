@@ -19,9 +19,14 @@ describe("Error handler tests", () => {
       new ApplicationError(ErrorPrefix.InputValidationInvalidFormat, ["email"]),
       new ApplicationError(ErrorPrefix.InputValidationRequired, ["email"]),
     ];
-    const graphQlError: GraphQLError = new GraphQLError(sampleMessage, {
-      originalError: new Error(JSON.stringify(errors)),
-    });
+    const graphQlError: GraphQLError = new GraphQLError(
+      sampleMessage,
+      null,
+      null,
+      null,
+      null,
+      new Error(JSON.stringify(errors))
+    );
 
     // Act
     const responseError = errorHandler(graphQlError) as UserInputError;
