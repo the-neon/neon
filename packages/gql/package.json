@@ -12,7 +12,8 @@
     "neon": "bin/neon.js"
   },
   "peerDependencies": {
-    "@the-neon/core": "*"
+    "@the-neon/core": "*",
+    "aws-amplify": "^6.0.0"
   },
   "dependencies": {
     "apollo-server": "^3.10.2",
