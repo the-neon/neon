@@ -13,8 +13,10 @@ class GraphQlApiClientGenerator {
   private static ts = "  ";
 
   private static readonly GQL_CLIENT = `
-import { API } from "aws-amplify";
-import gql from "graphql-tag";
+import { generateClient } from "aws-amplify/api";
+
+// Initialize the API client
+const client = generateClient();
 
 export const ErrorPrefix = {
   ${Object.keys(ErrorPrefix)
@@ -32,7 +34,10 @@ export const apiCall = async ({ query, variables, fragments }) => {
   }
 
   try {
-    const response = await API.graphql({ query: gql\`\${query.replace('...fragments', fragmentStr)}\`, variables });
+    const response = await client.graphql({
+      query: query.replace('...fragments', fragmentStr),
+      variables
+    });
     return { success: true, data: Object.values(response.data)[0] };
   } catch (e) {
     if (!e.errors) {
