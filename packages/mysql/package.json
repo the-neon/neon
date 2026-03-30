@@ -9,9 +9,9 @@
     "directory": "packages/mysql"
   },
   "dependencies": {
-    "change-case": "^4.1.1",
-    "mysql2": "^2.1.0",
-    "sequelize": "^6.3.5"
+    "change-case": "^5.4.4",
+    "mysql2": "^3.14.1",
+    "sequelize": "^6.37.8"
   },
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
@@ -21,7 +21,7 @@
     "lib": "lib"
   },
   "devDependencies": {
-    "@types/node": "^14.6.4"
+    "@types/node": "^22.15.21"
   },
   "author": "",
   "description": ""

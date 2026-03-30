@@ -6,7 +6,7 @@ describe("Email Validator", () => {
   const invalidEmail = "stojce@com";
   const emptyEmail = "";
   const nullEmail = null;
-  let undefinedEmail: string;
+  let undefinedEmail: string | undefined = undefined;
 
   let descriptor = {
     value: function (arg) {
@@ -56,7 +56,7 @@ describe("UUID Validator", () => {
   const invalidUuid3 = "Vfd11358-0ec4-11eb-b776-06e5e0b8a9adf";
   const emptyUuid = "";
 
-  let nullUuid: string;
+  let nullUuid: string | undefined = undefined;
 
   let descriptor = {
     value: function (arg) {
@@ -126,7 +126,7 @@ describe("`Not Empty` Validator", () => {
   // String
   const validString = "stojce";
   const emptyString = "";
-  let nullString: string;
+  let nullString: string | undefined = undefined;
 
   it("should pass on valid string", () => {
     Validate({ arg: Validator.notEmpty })({}, "", descriptor);
@@ -147,7 +147,7 @@ describe("`Not Empty` Validator", () => {
   const validNumber1 = 12;
   const validNumber2 = 0;
   const validNumber3 = -12;
-  let nullNumber: number;
+  let nullNumber: number | undefined = undefined;
 
   it("should pass on valid number 1", () => {
     Validate({ arg: Validator.notEmpty })({}, "", descriptor);
@@ -172,7 +172,7 @@ describe("`Not Empty` Validator", () => {
   // Bool
   const validBool1 = true;
   const validBool2 = false;
-  let nullBool: boolean;
+  let nullBool: boolean | undefined = undefined;
 
   it("should pass on valid bool 1", () => {
     Validate({ arg: Validator.notEmpty })({}, "", descriptor);
@@ -193,7 +193,7 @@ describe("`Not Empty` Validator", () => {
 
   const validArray = [2, 3];
   const emptyArray = [];
-  let nullArray: unknown[];
+  let nullArray: unknown[] | undefined = undefined;
   it("should pass on valid array 1", () => {
     Validate({ arg: Validator.notEmpty })({}, "", descriptor);
     expect(descriptor.value(validArray)).toBeTruthy();
@@ -212,7 +212,7 @@ describe("`Not Empty` Validator", () => {
   // Obj
   const validObj = { id: 1 };
   const emptyObj = {};
-  let nullObj: { id: unknown };
+  let nullObj: { id: unknown } | undefined = undefined;
 
   it("should pass on valid obj 1", () => {
     Validate({ arg: Validator.notEmpty })({}, "", descriptor);

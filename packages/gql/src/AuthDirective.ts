@@ -1,83 +1,69 @@
-import { SchemaDirectiveVisitor } from "graphql-tools";
+import { mapSchema, getDirective, MapperKind } from "@graphql-tools/utils";
+import { makeExecutableSchema } from "@graphql-tools/schema";
 import {
   Action,
   AuthenticationError,
   AuthorizationError,
 } from "@the-neon/core";
 import Authorizer from "./Authorizer";
+import { GraphQLSchema } from "graphql";
 
-class AuthDirective extends SchemaDirectiveVisitor {
-  authorizer: Authorizer;
-  constructor(config: any, authorizer: Authorizer) {
-    super(config);
-    this.authorizer = authorizer;
-  }
-
-  public visitObject(type: any): void {
-    this.ensureFieldsWrapped(type);
-    type._requiredAuthRoles = this["args"]?.roles;
-  }
-
-  // Visitor methods for nested types like fields and arguments
-  // also receive a details object that provides information about
-  // the parent and grandparent types.
-  public visitFieldDefinition(field, details) {
-    this.ensureFieldsWrapped(details.objectType);
-    field._requiredAuthRoles = this["args"]?.roles;
-  }
-
-  public ensureFieldsWrapped(objectType) {
-    // Mark the GraphQLObjectType object to avoid re-wrapping:
-    if (objectType._authFieldsWrapped) {
-      return;
-    }
-    objectType._authFieldsWrapped = true;
-
-    const fields = objectType.getFields();
-
-    Object.keys(fields).forEach((fieldName) => {
-      const field = fields[fieldName];
-      const { resolve } = field;
-      field.resolve = async function (...args) {
-        // Get the required Role from the field first, falling back
-        // to the objectType if no Role is required by the field:
-        const requiredRoles: string[] =
-          field._requiredAuthRoles || objectType._requiredAuthRoles;
-
-        if (!requiredRoles) {
-          return resolve.apply(this, args);
-        }
-
-        const context = args[2];
-        const user = await this.authorizer?.getAuthenticatedUser();
-        if (!user) {
-          throw new AuthenticationError();
-        }
-
-        let isAllowed = user.isOwner;
-
-        if (!isAllowed && requiredRoles[0] && user.permissions) {
-          isAllowed = JSON.parse(
-            Buffer.from(requiredRoles[0], "base64").toString()
-          )
-            .map(
-              (permission) =>
-                permission.entity === "any" ||
-                (user.permissions[permission.entity] &
-                  +Action[permission.action]) !==
-                  0
-            )
-            .reduce((a, b) => a && b, true);
-        }
-
-        if (isAllowed) {
-          context.user = user;
-          return resolve.apply(this, args);
-        }
-        throw new AuthorizationError();
-      };
-    });
-  }
+interface AuthDirectiveArgs {
+  roles?: string[];
 }
 
-export default AuthDirective;
+const authDirectiveTransformer = (
+  schema: GraphQLSchema,
+  authorizer: Authorizer,
+  directiveName: string = "auth",
+): GraphQLSchema => {
+  return mapSchema(schema, {
+    [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
+      const authDirective = getDirective(
+        schema,
+        fieldConfig,
+        directiveName,
+      )?.[0];
+      if (authDirective) {
+        const { resolve } = fieldConfig;
+        fieldConfig.resolve = async function (...args) {
+          const requiredRoles: string[] =
+            (authDirective as AuthDirectiveArgs).roles || [];
+          const context = args[2];
+          const user = await authorizer?.getAuthenticatedUser();
+
+          if (!user) {
+            throw new AuthenticationError();
+          }
+
+          let isAllowed = user.isOwner;
+
+          if (!isAllowed && requiredRoles?.[0] && user.permissions) {
+            const permissions = user.permissions;
+            isAllowed = JSON.parse(
+              Buffer.from(requiredRoles[0], "base64").toString(),
+            )
+              .map(
+                (permission: { entity: string; action: string }) =>
+                  permission.entity === "any" ||
+                  (permissions[permission.entity] &
+                    +Action[permission.action]) !==
+                    0,
+              )
+              .reduce((a: boolean, b: boolean) => a && b, true);
+          }
+
+          if (isAllowed) {
+            context.user = user;
+            return resolve?.apply(this, args);
+          }
+          throw new AuthorizationError();
+        };
+      }
+      return fieldConfig;
+    },
+  });
+};
+
+export { authDirectiveTransformer };
+export default authDirectiveTransformer;

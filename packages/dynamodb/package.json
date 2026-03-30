@@ -24,6 +24,6 @@
   "author": "",
   "description": "",
   "dependencies": {
-    "aws-sdk": "^2.1253.0"
+    "aws-sdk": "^2.1693.0"
   }
 }

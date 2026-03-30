@@ -9,7 +9,7 @@
     "directory": "packages/pg"
   },
   "dependencies": {
-    "pg": "^8.8.0"
+    "pg": "^8.16.0"
   },
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
@@ -22,7 +22,7 @@
     "lib": "lib"
   },
   "devDependencies": {
-    "@types/pg": "^7.14.5"
+    "@types/pg": "^8.15.2"
   },
   "author": "Stojce Slavkovski",
   "description": "PostgreSQL client for Neon"

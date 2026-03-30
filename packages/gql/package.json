@@ -12,18 +12,18 @@
     "neon": "bin/neon.js"
   },
   "peerDependencies": {
-    "@the-neon/core": "*",
-    "aws-amplify": "^6.0.0"
+    "@the-neon/core": "*"
   },
   "dependencies": {
-    "apollo-server": "^3.10.2",
+    "@graphql-tools/schema": "^10.0.31",
+    "@graphql-tools/utils": "^11.0.0",
+    "apollo-server": "^3.13.0",
     "chalk": "^5.0.1",
-    "graphql": "^15.0.0",
+    "graphql": "^16.11.0",
     "graphql-iso-date": "^3.6.1",
-    "graphql-tools": "^7.0.0",
     "graphql-type-json": "^0.3.2",
     "graphql-type-long": "^0.1.1",
-    "json5": "^2.2.1"
+    "json5": "^2.2.3"
   },
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
