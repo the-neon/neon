@@ -13,10 +13,8 @@ class GraphQlApiClientGenerator {
   private static ts = "  ";
 
   private static readonly GQL_CLIENT = `
-import { generateClient } from "aws-amplify/api";
-
-// Initialize the API client
-const client = generateClient();
+import { Amplify } from 'aws-amplify';
+import { fetchAuthSession } from 'aws-amplify/auth';
 
 export const ErrorPrefix = {
   ${Object.keys(ErrorPrefix)
@@ -28,32 +26,57 @@ export const apiCall = async ({ query, variables, fragments }) => {
   let fragmentStr = '';
   if (fragments) {
     fragmentStr = Object.keys(fragments).reduce((agg, val) => {
-      agg += (val + ' {\\n' + fragments[val].join('\\n') + '\\n}');
+      agg += val + ' {\\n' + fragments[val].join('\\n') + '\\n}';
       return agg;
     }, '');
   }
 
   try {
-    const response = await client.graphql({
-      query: query.replace('...fragments', fragmentStr),
-      variables
+    const config = Amplify.getConfig();
+    const endpoint = config.API?.GraphQL?.endpoint;
+
+    const session = await fetchAuthSession();
+    const idToken = session.tokens?.idToken?.toString();
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(idToken ? { Authorization: idToken } : {}),
+      },
+      body: JSON.stringify({
+        query: query.replace('...fragments', fragmentStr),
+        variables,
+      }),
     });
-    return { success: true, data: Object.values(response.data)[0] };
-  } catch (e) {
-    if (!e.errors) {
-      return { success: false, message: 'Unknown error' };
+
+    const json = await response.json();
+
+    if (json.errors) {
+      const errors = json.errors.map(({ extensions, message }) => ({
+        message,
+        inputs: extensions?.inputs,
+        affected: extensions?.affected,
+        reason: extensions?.reason,
+      }));
+      return { success: false, errors };
     }
 
-    const errors = e.errors.map(({ extensions, message }) => ({
-      message,
-      inputs: extensions?.inputs,
-      affected: extensions?.affected,
-      reason: extensions?.reason,
-    }));
+    return { success: true, data: Object.values(json.data)[0] };
+  } catch (e) {
+    if (e.errors) {
+      const errors = e.errors.map(({ extensions, message }) => ({
+        message,
+        inputs: extensions?.inputs,
+        affected: extensions?.affected,
+        reason: extensions?.reason,
+      }));
+      return { success: false, errors };
+    }
 
-    return { success: false, errors };
+    return { success: false, message: 'Unknown error' };
   }
-}
+};
   `;
 
   static createReqFields(query, types) {
