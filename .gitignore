@@ -110,3 +110,4 @@ dist
 # packages build
 packages/**/lib
 .local
+.*code
