@@ -33,6 +33,8 @@
     "lib": "lib"
   },
   "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
     "test": "jest --coverage"
   },
   "author": "Stojce Slavkovski",
