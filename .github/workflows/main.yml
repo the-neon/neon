@@ -22,14 +22,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
-          version: 9
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "24.x"
-          cache: "pnpm"
+          version: 10
+          cache: true
 
       - name: Run tests
         run: |
