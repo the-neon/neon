@@ -1,15 +1,10 @@
-/* eslint-disable prefer-rest-params */
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-
 import { Valid } from "./Validity";
 import {
   ArgumentValidationFunction,
   ValidationFunction,
   Validator,
 } from "./Validator";
-import { ApplicationError, ErrorPrefix } from "@the-neon/core";
+import { ApplicationError, ErrorPrefix, InputError } from "@the-neon/core";
 
 /**
  * Method decorator for authlidation
@@ -20,7 +15,7 @@ export function Validate(
       | (Validator | ArgumentValidationFunction)
       | (Validator | ArgumentValidationFunction)[];
   },
-  functions?: ValidationFunction | ValidationFunction[]
+  functions?: ValidationFunction | ValidationFunction[],
 ) {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value;
@@ -61,8 +56,8 @@ export function Validate(
                 new ApplicationError(
                   ex.prefix || ErrorPrefix.InputValidation,
                   ex.affected || null,
-                  ex.message
-                )
+                  ex.message,
+                ),
               );
             }
           }
@@ -80,8 +75,8 @@ export function Validate(
               new ApplicationError(
                 ex.prefix || ErrorPrefix.InputValidation,
                 ex.affected || null,
-                ex.message
-              )
+                ex.message,
+              ),
             );
           }
           return;
@@ -93,7 +88,7 @@ export function Validate(
 
         if (ndx < 0) {
           console.warn(
-            `invalid validation key '${key}' on ${target.constructor.name}.${propertyKey}. Possible keys: ${params} `
+            `invalid validation key '${key}' on ${target.constructor.name}.${propertyKey}. Possible keys: ${params} `,
           );
         } else {
           const validators = (
@@ -109,8 +104,8 @@ export function Validate(
                   new ApplicationError(
                     ErrorPrefix.InputValidation,
                     key,
-                    `'${key}' ${ex.message}`
-                  )
+                    `'${key}' ${ex.message}`,
+                  ),
                 );
               }
             } else {
@@ -121,8 +116,8 @@ export function Validate(
                       new ApplicationError(
                         ErrorPrefix.InputValidationInvalidFormat,
                         key,
-                        `Invalid email address for '${key}' (${argValue})`
-                      )
+                        `Invalid email address for '${key}' (${argValue})`,
+                      ),
                     );
                   }
                   break;
@@ -133,8 +128,8 @@ export function Validate(
                       new ApplicationError(
                         ErrorPrefix.InputValidationRequired,
                         key,
-                        `'${key}'is required`
-                      )
+                        `'${key}'is required`,
+                      ),
                     );
                   }
                   break;
@@ -145,8 +140,8 @@ export function Validate(
                       new ApplicationError(
                         ErrorPrefix.InputValidationInvalidFormat,
                         key,
-                        `'${key}'is not valid UUID`
-                      )
+                        `'${key}'is not valid UUID`,
+                      ),
                     );
                   }
                   break;
@@ -157,8 +152,8 @@ export function Validate(
                       new ApplicationError(
                         ErrorPrefix.InputValidationSmallerThan,
                         key,
-                        `'${key}'is smaller or equal to 0`
-                      )
+                        `'${key}'is smaller or equal to 0`,
+                      ),
                     );
                   }
                   break;
@@ -168,8 +163,8 @@ export function Validate(
                     new ApplicationError(
                       ErrorPrefix.InputValidation,
                       key,
-                      `Invlid validation for '${key}'`
-                    )
+                      `Invlid validation for '${key}'`,
+                    ),
                   );
                   break;
               }
@@ -179,7 +174,10 @@ export function Validate(
       });
 
       if (validationErrors.length > 0) {
-        throw new Error(JSON.stringify(validationErrors));
+        throw new InputError(
+          "Validation failed",
+          validationErrors.map((e) => new Map([[e.key || "", e.message]])),
+        );
       }
       return originalMethod.apply(this, args);
     };

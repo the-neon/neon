@@ -12,11 +12,11 @@ import { Pool, PoolClient } from "pg";
 // import ILogger from '../ILogger';
 // import DatabaseMap from './DatabaseMap';
 
-interface SortRequest {
-  sortField: string;
-  sortOrder: string;
-  filter: string | string[];
-}
+// interface SortRequest {
+//   sortField: string;
+//   sortOrder: string;
+//   filter: string | string[];
+// }
 
 class PostgresDB {
   transaction = false;
@@ -85,7 +85,7 @@ class PostgresDB {
     const keys = Object.keys(columns);
     const values = Object.values(columns);
     const sql = `INSERT INTO ${sanTable} (${keys.map(
-      (a) => `${this.toSnakeCase(a)}`
+      (a) => `${this.toSnakeCase(a)}`,
     )}) 
       VALUES (${keys.map((_, ndx) => `$${ndx + 1}`)}) RETURNING *`;
     const resp = await this.query(sql, values);
@@ -112,7 +112,7 @@ class PostgresDB {
   public async delete<T>(table: string, filter: any): Promise<T> {
     const sanTable = this.sanitize(table);
     const sql = `DELETE FROM ${sanTable} WHERE ${this.generateCondition(
-      filter
+      filter,
     )} RETURNING *`;
 
     const resp = await this.query(sql, this.toArray(filter));
@@ -140,7 +140,7 @@ class PostgresDB {
   public async getById<T>(
     table: string,
     id: string | number,
-    filter?: any
+    filter?: any,
   ): Promise<T | null> {
     const rows = await this.getByIds<T>(table, [id], filter);
     if (rows && rows.length === 1) {
@@ -152,7 +152,7 @@ class PostgresDB {
   public async getByIds<T>(
     table: string,
     ids: (string | number)[],
-    filter?: any
+    filter?: any,
   ): Promise<T[] | null> {
     const sanTable = this.sanitize(table);
 
@@ -162,7 +162,7 @@ class PostgresDB {
     }
 
     const sql = `SELECT * FROM ${sanTable} WHERE id in (${ids.map(
-      (_, ndx) => `$${ndx + 1}`
+      (_, ndx) => `$${ndx + 1}`,
     )}) ${where}`;
 
     const rows = this.getMany(sql, [
@@ -271,7 +271,7 @@ class PostgresDB {
     return keys
       .map(
         (k, idx) =>
-          `${this.toSnakeCase(k)}=$${(parameterOffset || 0) + idx + 1}`
+          `${this.toSnakeCase(k)}=$${(parameterOffset || 0) + idx + 1}`,
       )
       .join(" AND ");
   }
@@ -281,7 +281,7 @@ class PostgresDB {
       str &&
       str
         .match(
-          /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g
+          /[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g,
         )
         .map((x) => x.toLowerCase())
         .join("_")

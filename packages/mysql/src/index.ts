@@ -22,7 +22,7 @@ class MySqlDb {
           max: 1,
           idle: 1000,
         },
-      }
+      },
     );
   }
 
@@ -66,7 +66,7 @@ class MySqlDb {
     sql: string,
     params?: Record<string, unknown>,
     queryType = QueryTypes.SELECT,
-    conn?: Sequelize
+    conn?: Sequelize,
   ): Promise<Record<string, unknown> | Record<string, unknown>[] | unknown> {
     try {
       const activeConnection = conn || this.connection;
@@ -95,7 +95,6 @@ class MySqlDb {
         return rows ? null : params;
       }
     } catch (e) {
-      // eslint-disable-next-line
       console.log(JSON.stringify(e));
       if (queryType !== QueryTypes.SELECT) {
         throw e;
@@ -107,7 +106,7 @@ class MySqlDb {
   async getOne<T>(
     sqlOrTable: string,
     params?: Record<string, unknown>,
-    conn?: Sequelize
+    conn?: Sequelize,
   ): Promise<T> {
     let results;
     if (sqlOrTable.toLowerCase().includes("select")) {
@@ -124,7 +123,7 @@ class MySqlDb {
         generatedSql,
         params,
         QueryTypes.SELECT,
-        conn
+        conn,
       );
     }
     return results?.[0];
@@ -133,14 +132,14 @@ class MySqlDb {
   async getMany<T>(
     sqlOrTable: string,
     params?: Record<string, unknown>,
-    conn?: Sequelize
+    conn?: Sequelize,
   ): Promise<T[]> {
     if (sqlOrTable.toLowerCase().includes("select")) {
       return this.execute(
         sqlOrTable,
         params,
         QueryTypes.SELECT,
-        conn
+        conn,
       ) as Promise<T[]>;
     }
 
@@ -155,14 +154,14 @@ class MySqlDb {
       generatedSql,
       params,
       QueryTypes.SELECT,
-      conn
+      conn,
     ) as Promise<T[]>;
   }
 
   async insert<T>(
     table: string,
     columns: Record<string, unknown>,
-    conn?: Sequelize
+    conn?: Sequelize,
   ): Promise<T> {
     const keys = Object.keys(columns);
     const sql = `INSERT INTO 
@@ -176,14 +175,14 @@ class MySqlDb {
     sqlOrTable: string,
     condition: Record<string, unknown>,
     columns: Record<string, unknown>,
-    conn?: Sequelize
+    conn?: Sequelize,
   ): Promise<T> {
     if (sqlOrTable.toLowerCase().includes("update ")) {
       return this.execute(
         sqlOrTable,
         condition,
         QueryTypes.UPDATE,
-        conn
+        conn,
       ) as Promise<T>;
     }
 
@@ -199,14 +198,14 @@ class MySqlDb {
       sql,
       { ...condition, ...columns },
       QueryTypes.UPDATE,
-      conn
+      conn,
     ) as Promise<T>;
   }
 
   async delete(
     sqlOrTable: string,
     condition: Record<string, unknown>,
-    conn?: Sequelize
+    conn?: Sequelize,
   ): Promise<unknown> {
     if (sqlOrTable.toLowerCase().includes("delete ")) {
       return this.execute(sqlOrTable, condition, QueryTypes.DELETE, conn);

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-console */
-
 import {
   readdirSync,
   readFileSync,
@@ -132,7 +129,7 @@ const delint = (sourceFile: SourceFile) => {
                         if (prop.initializer.elements) {
                           result[prop.name.escapedText] =
                             prop.initializer.elements.map(
-                              (x) => x.name.escapedText
+                              (x) => x.name.escapedText,
                             );
                         } else {
                           result[prop.name.escapedText] =
@@ -140,13 +137,13 @@ const delint = (sourceFile: SourceFile) => {
                         }
                         return result;
                       },
-                      {}
+                      {},
                     );
 
                     const actions = properties.action || properties.actions;
                     if (Array.isArray(actions)) {
                       actions.forEach((action) =>
-                        auth.push(`${properties.entity}-${action}`)
+                        auth.push(`${properties.entity}-${action}`),
                       );
                     } else {
                       auth.push(`${properties.entity}-${properties.action}`);
@@ -207,7 +204,7 @@ const delint = (sourceFile: SourceFile) => {
           if (
             param.decorators &&
             param.decorators.some(
-              (d) => d["expression"]["escapedText"] === "key"
+              (d) => d["expression"]["escapedText"] === "key",
             )
           ) {
             paramType = "ID";
@@ -279,7 +276,7 @@ const delint = (sourceFile: SourceFile) => {
         enums.push({
           name: node["name"].escapedText,
           members: node["members"].map(
-            (element) => element.initializer.text || element.name.escapedText
+            (element) => element.initializer.text || element.name.escapedText,
           ),
         });
         break;
@@ -379,7 +376,7 @@ const delint = (sourceFile: SourceFile) => {
                   default:
                     member.typeName = element.type.typeName.escapedText;
                     member.scalar = enums.some(
-                      (e) => e.name === element.type.typeName.escapedText
+                      (e) => e.name === element.type.typeName.escapedText,
                     );
                     break;
                 }
@@ -416,7 +413,7 @@ const delint = (sourceFile: SourceFile) => {
                 } else {
                   member.typeName = `[${element.type.elementType.typeName.escapedText}]`;
                 }
-              } catch (ex) {
+              } catch {
                 member.typeName = "JSON";
               }
               break;
@@ -425,7 +422,7 @@ const delint = (sourceFile: SourceFile) => {
               try {
                 console.error("warning: TupleType!");
                 member.typeName = `[${element.type.elementTypes[0].typeName.escapedText}]`;
-              } catch (ex) {
+              } catch {
                 member.typeName = "JSON";
               }
               break;
@@ -443,7 +440,7 @@ const delint = (sourceFile: SourceFile) => {
             default: {
               member.typeName = "JSON";
               console.info(
-                `No mapping implementation for node of king '${element.type.kind}', defaulting to 'JSON'`
+                `No mapping implementation for node of king '${element.type.kind}', defaulting to 'JSON'`,
               );
               break;
             }
@@ -480,7 +477,7 @@ config.inputDirs.forEach((directory) => {
         readFileSync(fileName).toString(),
         ScriptTarget.ESNext,
         /*setParentNodes */ true,
-        ScriptKind.TS
+        ScriptKind.TS,
       );
 
       // delint it
@@ -565,7 +562,7 @@ let tbs = "  ";
 classes.forEach((cls) => {
   if (cls.methods) {
     lines.push(
-      `${tbs}${cls.instanceName}: new GqlDataSource(${cls.className}),`
+      `${tbs}${cls.instanceName}: new GqlDataSource(${cls.className}),`,
     );
   }
 });
@@ -583,10 +580,10 @@ queries.forEach((q) => {
   const prms = q.params.map((p) => p.paramName);
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
-      ", "
+      ", ",
     )} }, { dataSources }) => dataSources.${q.instance}.call('${
       q.methodName
-    }', ${prms.join(", ")}),`
+    }', ${prms.join(", ")}),`,
   );
 });
 
@@ -599,10 +596,10 @@ mutations.forEach((q) => {
   const prms = q.params.map((p) => p.paramName);
   lines.push(
     `${tbs}${q.methodName}: (_, { ${prms.join(
-      ", "
+      ", ",
     )} }, { dataSources }) => dataSources.${q.instance}.call('${
       q.methodName
-    }', ${prms.join(", ")}),`
+    }', ${prms.join(", ")}),`,
   );
 });
 
@@ -665,13 +662,13 @@ inter.forEach((ifc) => {
       ifc.implements && ifc.kind === "type"
         ? " implements " + ifc.implements
         : ""
-    } {`
+    } {`,
   );
   tbs = "  ";
 
   ifc.members.forEach((member) => {
     schema.push(
-      `${tbs}${member.name}: ${member.typeName}${member.optional ? "" : "!"}`
+      `${tbs}${member.name}: ${member.typeName}${member.optional ? "" : "!"}`,
     );
   });
   tbs = "";
@@ -685,7 +682,7 @@ queries.forEach((q) => {
   let params = "";
   if (q.params && q.params.length > 0) {
     const paramsarr = q.params.map(
-      (p) => `${p.paramName}: ${p.paramType}${p.optional ? "" : "!"}`
+      (p) => `${p.paramName}: ${p.paramType}${p.optional ? "" : "!"}`,
     );
     params = `(${paramsarr.join(", ")})`;
   }
@@ -708,7 +705,7 @@ mutations.forEach((q) => {
   let params = "";
   if (q.params && q.params.length > 0) {
     const paramsarr = q.params.map(
-      (p) => `${p.paramName}: ${p.paramType}${p.optional ? "" : "!"}`
+      (p) => `${p.paramName}: ${p.paramType}${p.optional ? "" : "!"}`,
     );
     params = `(${paramsarr.join(", ")})`;
   }
@@ -740,6 +737,6 @@ if (config.outApiClient) {
     mutations,
     inter,
     genpath,
-    config.outApiClient
+    config.outApiClient,
   );
 }

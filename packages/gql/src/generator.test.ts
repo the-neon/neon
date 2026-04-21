@@ -8,8 +8,6 @@ describe("schema generator", () => {
     delinter = new Delinter();
   });
 
-  it.todo("provide schema");
-
   it("should ignore empty and non-existing folders", () => {
     const sourceFileMutation = createSourceFile(
       "nameAPI.ts",
@@ -22,7 +20,7 @@ describe("schema generator", () => {
       }`,
       ScriptTarget.ESNext,
       true,
-      ScriptKind.TS
+      ScriptKind.TS,
     );
 
     delinter.delint(sourceFileMutation);
@@ -34,7 +32,7 @@ describe("schema generator", () => {
       }`,
       ScriptTarget.ESNext,
       true,
-      ScriptKind.TS
+      ScriptKind.TS,
     );
 
     delinter.delint(sourceFileModel);
@@ -74,7 +72,7 @@ describe("schema generator", () => {
       }`,
       ScriptTarget.ESNext,
       true,
-      ScriptKind.TS
+      ScriptKind.TS,
     );
 
     delinter.delint(sourceFileMutation);
@@ -86,7 +84,7 @@ describe("schema generator", () => {
       }`,
       ScriptTarget.ESNext,
       true,
-      ScriptKind.TS
+      ScriptKind.TS,
     );
 
     delinter.delint(sourceFileModel);

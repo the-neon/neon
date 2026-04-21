@@ -3,6 +3,10 @@
   "parserOptions": {
     "sourceType": "module"
   },
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
   "plugins": ["@typescript-eslint"]
 }

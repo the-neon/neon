@@ -1,7 +1,7 @@
 {
   "name": "@the-neon/pg",
   "main": "lib/index.js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
     "directory": "packages/pg"
   },
   "dependencies": {
-    "pg": "^8.8.0"
+    "pg": "^8.20.0"
   },
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
@@ -22,7 +22,7 @@
     "lib": "lib"
   },
   "devDependencies": {
-    "@types/pg": "^7.14.5"
+    "@types/pg": "^8.20.0"
   },
   "author": "Stojce Slavkovski",
   "description": "PostgreSQL client for Neon"

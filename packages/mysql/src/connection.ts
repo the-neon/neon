@@ -15,7 +15,7 @@ const connection = new Sequelize(
       idle: 1000,
     },
     logging: process.env.DB_ENABLE_QUERY_LOGS === "true" ? console.log : false,
-  }
+  },
 );
 
 export { connection };

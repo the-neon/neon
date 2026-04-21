@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // API CLIENT
 // listDashboardsCall(...params) = framents => {
 
@@ -83,7 +81,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
     const resp: string[] = [];
     if (query.responseType !== "JSON") {
       const type = types.get(
-        query.responseType.replace("[", "").replace("]", "")
+        query.responseType.replace("[", "").replace("]", ""),
       );
       type?.members?.forEach((member) => {
         if (member.scalar) {
@@ -121,26 +119,26 @@ export const apiCall = async ({ query, variables, fragments }) => {
     queryLines.push("");
     queryLines.push(`const ${queryName} = \``);
     queryLines.push(
-      `${GraphQlApiClientGenerator.ts}${type} ${query.methodName}${paramsDef} {`
+      `${GraphQlApiClientGenerator.ts}${type} ${query.methodName}${paramsDef} {`,
     );
     queryLines.push(
-      `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${query.methodName}${inParams}`
+      `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${query.methodName}${inParams}`,
     );
     // TODO: check if fragments can be defined,; i.e. have compex type in response
     if (respDef) {
       queryLines.push(
-        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}{`
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}{`,
       );
       queryLines.push(
-        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${respDef}`
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${respDef}`,
       );
       queryLines.push(
-        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}...fragments`
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}...fragments`,
       );
       fragmentsIn = "fragments = null";
       fragmentsOut = ", fragments ";
       queryLines.push(
-        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}}`
+        `${GraphQlApiClientGenerator.ts}${GraphQlApiClientGenerator.ts}}`,
       );
     }
     queryLines.push(`${GraphQlApiClientGenerator.ts}}\`;`);
@@ -149,7 +147,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
     queryLines.push(
       `export const ${query.methodName}ApiCall = async (${
         funcParams ? "{" + funcParams + "}, " : ""
-      }${fragmentsIn}) => apiCall({ query: ${queryName}, variables: {${funcParams}}${fragmentsOut}});`
+      }${fragmentsIn}) => apiCall({ query: ${queryName}, variables: {${funcParams}}${fragmentsOut}});`,
     );
     queryLines.push("");
 
@@ -159,7 +157,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
   static createClientApis(
     queries: any[],
     mutations: any[],
-    types
+    types,
   ): Map<string, string> {
     const apis: Map<string, string> = new Map();
 
@@ -176,7 +174,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
       api += GraphQlApiClientGenerator.createClientMethods(
         query,
         "query",
-        types
+        types,
       );
       apis.set(query.instance, api);
     }
@@ -189,7 +187,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
       api += GraphQlApiClientGenerator.createClientMethods(
         mutation,
         "mutation",
-        types
+        types,
       );
       apis.set(mutation.instance, api);
     }
@@ -202,7 +200,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
     mutations: unknown[],
     types: Map<string, unknown>,
     gqlPath: string,
-    clientPath?: string
+    clientPath?: string,
   ): void {
     if (clientPath) {
       const apipath = path.resolve(clientPath);
@@ -216,7 +214,7 @@ export const apiCall = async ({ query, variables, fragments }) => {
       const clientApis = GraphQlApiClientGenerator.createClientApis(
         queries,
         mutations,
-        types
+        types,
       );
       clientApis.forEach((val, k) => {
         const apiPath = path.resolve(apipath, `${k}.js`);

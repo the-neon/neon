@@ -111,3 +111,4 @@ dist
 packages/**/lib
 .local
 .*code
+docs
