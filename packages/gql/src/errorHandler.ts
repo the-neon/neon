@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ApolloError,
   AuthenticationError,
@@ -22,7 +21,7 @@ const tryParse = (str: string): Error[] | null | undefined => {
 
 const handleApplicationError = (
   errors: ApplicationError[],
-  message: string
+  message: string,
 ) => {
   if (errors.some((e) => e.prefix === ErrorPrefix.Authentication)) {
     return new AuthenticationError(message);
@@ -34,7 +33,7 @@ const handleApplicationError = (
   if (errors.some((e) => e.prefix === ErrorPrefix.NotSupportedAppVersion)) {
     return new ApolloError(
       "Not supported Application!",
-      ErrorPrefix.NotSupportedAppVersion
+      ErrorPrefix.NotSupportedAppVersion,
     );
   }
 
@@ -90,10 +89,18 @@ const errorHandler = (ex: GraphQLError): Error => {
         return new UserInputError(originalErrorMessage, { severity: "error" });
       }
 
-      const inputs = errors.map(({ key, message }) => ({
-        field: key,
-        message: message,
-      }));
+      const inputs = errors.map(
+        (
+          errEntry: Map<string, string> | { key?: string; message?: string },
+        ) => {
+          if (errEntry instanceof Map) {
+            const [field = ""] = [...errEntry.keys()];
+            const message = errEntry.get(field) ?? "";
+            return { field, message };
+          }
+          return { field: errEntry.key ?? "", message: errEntry.message ?? "" };
+        },
+      );
 
       if (inputs.length === 1 && !inputs[0].field) {
         return new UserInputError(inputs[0].message, { severity: "error" });
@@ -118,7 +125,7 @@ const errorHandler = (ex: GraphQLError): Error => {
       return new ApolloError(
         originalErrorMessage,
         "EXTERNAL_API_ERROR",
-        configuration
+        configuration,
       );
     }
     case "SystemError":
@@ -131,7 +138,7 @@ const errorHandler = (ex: GraphQLError): Error => {
       return new ApolloError(
         "Something went wrong!",
         "INTERNAL_SERVER_ERROR",
-        configuration
+        configuration,
       );
     }
   }

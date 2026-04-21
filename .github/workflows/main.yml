@@ -6,9 +6,9 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -22,9 +22,13 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v6
 
-      # Runs a set of commands using the runners shell
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.29.2
+          cache: true
+
       - name: Run tests
         run: |
-          npx yarn
-          npx yarn build
-          npx yarn test
+          pnpm install --frozen-lockfile
+          pnpm run build
+          pnpm run test

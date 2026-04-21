@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-console */
-
 import {
   SourceFile,
   Node,
@@ -117,7 +113,7 @@ class Delinter {
                           if (prop.initializer.elements) {
                             result[prop.name.escapedText] =
                               prop.initializer.elements.map(
-                                (x) => x.name.escapedText
+                                (x) => x.name.escapedText,
                               );
                           } else {
                             result[prop.name.escapedText] =
@@ -125,13 +121,13 @@ class Delinter {
                           }
                           return result;
                         },
-                        {}
+                        {},
                       );
 
                       const actions = properties.action || properties.actions;
                       if (Array.isArray(actions)) {
                         actions.forEach((action) =>
-                          auth.push(`${properties.entity}-${action}`)
+                          auth.push(`${properties.entity}-${action}`),
                         );
                       } else {
                         auth.push(`${properties.entity}-${properties.action}`);
@@ -238,7 +234,7 @@ class Delinter {
                       console.log(
                         "Defaulting type to JSON, ",
                         param.type.kind,
-                        typeName
+                        typeName,
                       );
                       paramType = typeName || BuiltinType.Json;
                       console.log("Defaluting type to JSON, ", param.type.kind);
@@ -317,7 +313,7 @@ class Delinter {
           this.enums.push({
             name: node["name"].escapedText,
             members: node["members"].map(
-              (element) => element.initializer.text || element.name.escapedText
+              (element) => element.initializer.text || element.name.escapedText,
             ),
           });
           break;
@@ -441,7 +437,7 @@ class Delinter {
                   } else {
                     member.typeName = `[${element.type.elementType.typeName.escapedText}]`;
                   }
-                } catch (ex) {
+                } catch {
                   member.typeName = "JSON";
                 }
                 break;
@@ -450,7 +446,7 @@ class Delinter {
                 try {
                   console.error("warning: TupleType!");
                   member.typeName = `[${element.type.elementTypes[0].typeName.escapedText}]`;
-                } catch (ex) {
+                } catch {
                   member.typeName = "JSON";
                 }
                 break;
@@ -468,7 +464,7 @@ class Delinter {
               default: {
                 member.typeName = "JSON";
                 console.info(
-                  `No mapping implementation for node of king '${element.type.kind}', defaulting to 'JSON'`
+                  `No mapping implementation for node of king '${element.type.kind}', defaulting to 'JSON'`,
                 );
                 break;
               }

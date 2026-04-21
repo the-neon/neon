@@ -1,5 +1,7 @@
 module.exports = {
-  preset: "ts-jest",
+  transform: {
+    "^.+\\.tsx?$": ["ts-jest", { tsconfig: { jsx: "react" } }],
+  },
   testEnvironment: "node",
   testPathIgnorePatterns: ["<rootDir>/lib/", "<rootDir>/node_modules/"],
 };

@@ -1,31 +1,41 @@
-import { DynamoDB } from "aws-sdk";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  QueryCommand,
+  ScanCommand,
+  PutCommand,
+  UpdateCommand,
+  DeleteCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { v1 as uuidv1 } from "uuid";
-import { DocumentClient, QueryInput } from "aws-sdk/clients/dynamodb";
 
 class DynamoDb {
-  private _dbClient: DocumentClient | null = null;
+  private _dbClient: DynamoDBDocumentClient | null = null;
 
-  private get dbClient(): DocumentClient {
+  private get dbClient(): DynamoDBDocumentClient {
     if (!this._dbClient) {
-      this._dbClient = new DynamoDB.DocumentClient();
+      const client = new DynamoDBClient({});
+      this._dbClient = DynamoDBDocumentClient.from(client);
     }
 
     return this._dbClient;
   }
 
   async getById(table: any, id: any) {
-    return this.dbClient.get({ TableName: table, Key: { id } }).promise();
+    const result = await this.dbClient.send(
+      new GetCommand({ TableName: table, Key: { id } }),
+    );
+    return result;
   }
 
   async query(table: string, attrs: any, index?: string) {
-    const params = {
+    const params: QueryCommand["input"] = {
       TableName: table,
-      IndexName: index ? index : undefined,
-      KeyConditionExpression: {},
-      ExpressionAttributeValues: {},
-    } as QueryInput;
+      IndexName: index,
+    };
 
-    return this.dbClient.query(params).promise();
+    return this.dbClient.send(new QueryCommand(params));
   }
 
   async scan(
@@ -33,7 +43,7 @@ class DynamoDb {
     attrs?: any,
     filterExpression?: any,
     expressionAttributeNames?: any,
-    expressionAttributeValues?: any
+    expressionAttributeValues?: any,
   ) {
     const params = {
       TableName: table,
@@ -47,28 +57,21 @@ class DynamoDb {
       params.FilterExpression = expression;
       params.ExpressionAttributeValues = expressionValues;
     }
-    const prom = await this.dbClient.scan(params).promise();
-    return prom;
+    return this.dbClient.send(new ScanCommand(params));
   }
 
   async insert(table: any, input: any) {
     const { id, ...data } = input;
     const item = { id: id || uuidv1(), ...data };
-    return new Promise((resolve, reject) => {
-      return this.dbClient.put({ TableName: table, Item: item }, (err) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve(item);
-      });
-    });
+    await this.dbClient.send(new PutCommand({ TableName: table, Item: item }));
+    return item;
   }
 
-  async update(table, data) {
+  async update(table: any, data: any) {
     const { id, ...rest } = data;
     const keys = Object.keys(rest);
 
-    const params = {
+    const params: UpdateCommand["input"] = {
       TableName: table,
       Key: { id },
       UpdateExpression: `SET ${keys
@@ -76,48 +79,40 @@ class DynamoDb {
         .join(", ")}`,
       ExpressionAttributeValues: keys.reduce(
         (res, key) => ((res[`:${key}`] = rest[key] || null), res),
-        {}
+        {},
       ),
       ReturnValues: "UPDATED_NEW",
     };
 
-    return new Promise((resolve, reject) => {
-      return this.dbClient.update(params, (err, data) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve({ id, ...data.Attributes });
-      });
-    });
+    const result = await this.dbClient.send(new UpdateCommand(params));
+    return { id, ...result.Attributes };
   }
 
-  async delete(table, id) {
-    const params = {
+  async delete(table: any, id: any) {
+    const params: DeleteCommand["input"] = {
       TableName: table,
       Key: { id },
       ReturnValues: "ALL_OLD",
     };
 
-    return new Promise((resolve, reject) => {
-      return this.dbClient.delete(params, (err, data) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve({ ...data.Attributes });
-      });
-    });
+    const result = await this.dbClient.send(new DeleteCommand(params));
+    return { ...result.Attributes };
   }
 
-  mapAttrToParams(attrs) {
+  mapAttrToParams(attrs: any) {
     const keys = Object.keys(attrs || {});
     const expression: string[] = [];
-    const expressionValues = {};
+    const expressionValues: any = {};
 
     keys.forEach((k) => {
       const value = attrs[k];
       if (Array.isArray(value)) {
-        expression.push(`${k} IN (${value.map((_, idx) => `:${k}${idx}`)})`);
-        value.forEach((val, idx) => (expressionValues[`:${k}${idx}`] = val));
+        expression.push(
+          `${k} IN (${value.map((_: any, idx: number) => `:${k}${idx}`)})`,
+        );
+        value.forEach(
+          (val: any, idx: number) => (expressionValues[`:${k}${idx}`] = val),
+        );
       } else {
         expression.push(`${k} = :${k}`);
         expressionValues[`:${k}`] = value;

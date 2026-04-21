@@ -39,7 +39,7 @@ config.inputDirs.forEach((directory) => {
         readFileSync(fileName).toString(),
         ScriptTarget.ESNext,
         /*setParentNodes */ true,
-        ScriptKind.TS
+        ScriptKind.TS,
       );
 
       delinter.delint(sourceFile);

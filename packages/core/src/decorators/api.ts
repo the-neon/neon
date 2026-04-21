@@ -20,7 +20,7 @@ export function Auth(roles?: any[] | string, action?: Action | Action[]) {
   return (
     target: any,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ) => {};
 }
 
@@ -33,5 +33,5 @@ export function Auth(roles?: any[] | string, action?: Action | Action[]) {
 export function key(
   target: any,
   propertyKey: string | symbol,
-  parameterIndex: number
+  parameterIndex: number,
 ) {}
