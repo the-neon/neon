@@ -6,9 +6,9 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -22,12 +22,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '24.x'
-          cache: 'pnpm'
+          node-version: "24.x"
+          cache: "pnpm"
 
-      # Runs a set of commands using the runners shell
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Run tests
         run: |
           pnpm install --frozen-lockfile
