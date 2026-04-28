@@ -3,7 +3,7 @@ import {
   AuthenticationError,
   AuthorizationError,
 } from "@the-neon/core";
-import Authorizer from "./Authorizer";
+import Authorizer from "./Authorizer.js";
 
 interface DirectiveConfig {
   args?: { roles?: string[] };

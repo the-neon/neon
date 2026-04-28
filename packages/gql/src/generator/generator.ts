@@ -5,9 +5,9 @@ import chalk from "chalk";
 import { createSourceFile, ScriptKind, ScriptTarget } from "typescript";
 import { readdirSync, readFileSync, existsSync } from "fs";
 
-import { resolveConfig } from "./config";
+import { resolveConfig } from "./config.js";
 // import FileService from "./FileService";
-import Delinter from "./Delinter";
+import Delinter from "./Delinter.js";
 import { exit } from "process";
 
 const config = resolveConfig();
