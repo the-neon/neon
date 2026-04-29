@@ -12,6 +12,7 @@
   "packageManager": "pnpm@10.29.2",
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@apollo/protobufjs",
       "husky"
     ]
   },
