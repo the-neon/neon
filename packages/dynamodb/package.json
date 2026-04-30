@@ -28,7 +28,7 @@
   "author": "Stojce Slavkovski",
   "description": "DynamoDB client for Neon using AWS SDK v3",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.1033.0",
+    "@aws-sdk/client-dynamodb": "^3.1039.0",
     "@aws-sdk/lib-dynamodb": "^3.1033.0",
     "uuid": "^8.3.2"
   }
