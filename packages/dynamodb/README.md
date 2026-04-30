@@ -30,10 +30,18 @@ await db.scan("users", { status: "active" });
 
 ## API
 
+### Fetch
+
 - `getById(table, id)` — Get item by primary key
-- `query(table, attrs, index?)` — Query with attribute filters
+- `query(table, attrs, index?)` — Query with attribute filters on an index
 - `scan(table, attrs?, filterExpression?, expressionAttributeNames?, expressionAttributeValues?)` — Scan table
+
+### CRUD
+
 - `insert(table, input)` — Put new item (generates UUID if id not provided)
 - `update(table, data)` — Update item by id
 - `delete(table, id)` — Delete item by id
-- `mapAttrToParams(attrs)` — Map attributes to DynamoDB expression params
+
+### Utilities
+
+- `mapAttrToParams(attrs)` — Map attributes to DynamoDB expression params for scan filtering

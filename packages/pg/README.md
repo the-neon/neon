@@ -1,6 +1,6 @@
 # @the-neon/pg
 
-PostgreSQL client for Neon.
+PostgreSQL client for Neon with transaction support.
 
 ## Install
 
@@ -39,17 +39,28 @@ await db.getCount("users", { tenantId: "abc" });
 
 ## API
 
+### Transactions
+
 - `start()` — Begin transaction
 - `commit()` — Commit transaction
 - `rollback()` — Rollback transaction
-- `query(sql, args?)` — Execute raw SQL
-- `queryAsJson(sql, args?)` — Execute and return as JSON
-- `execute(sql, args?)` — Execute without return (INSERT/UPDATE/DELETE)
-- `insert(table, columns)` — Insert row
-- `update(table, filter, columns)` — Update rows matching filter
-- `delete(table, filter)` — Delete rows matching filter
+
+### Query
+
+- `query(sql, args?)` — Execute raw SQL, returns rowCount and rows
+- `queryAsJson(sql, args?)` — Execute and return results as JSON
+- `execute(sql, args?)` — Execute without return (INSERT/UPDATE/DELETE), returns rowCount
+
+### CRUD
+
+- `insert(table, columns)` — Insert row, returns inserted record
+- `update(table, filter, columns)` — Update rows matching filter, returns updated record
+- `delete(table, filter)` — Delete rows matching filter, returns deleted record
+
+### Fetch
+
 - `getOne(sql, args?)` — Fetch single row
 - `getMany(sql, args?)` — Fetch multiple rows
-- `getById(table, id, filter?)` — Fetch by id
-- `getByIds(table, ids, filter?)` — Fetch by multiple ids
-- `getCount(table, filter)` — Get row count
+- `getById(table, id, filter?)` — Fetch by id with optional filter
+- `getByIds(table, ids, filter?)` — Fetch by multiple ids with optional filter
+- `getCount(table, filter)` — Get row count with filter

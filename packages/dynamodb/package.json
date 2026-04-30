@@ -1,7 +1,8 @@
 {
   "name": "@the-neon/dynamodb",
+  "version": "0.0.8",
   "main": "lib/index.js",
-  "version": "0.0.7",
+  "types": "lib/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -14,19 +15,21 @@
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
   },
+"scripts": {
+    "build": "tsc -p .",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "homepage": "https://github.com/the-neon/neon#readme",
   "directories": {
     "lib": "lib"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "description": "",
+  "keywords": ["neon", "aws", "dynamodb", "database", "client", "typescript"],
+  "author": "Stojce Slavkovski",
+  "description": "DynamoDB client for Neon using AWS SDK v3",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1033.0",
     "@aws-sdk/lib-dynamodb": "^3.1033.0",
-    "@types/uuid": "^11.0.0",
     "uuid": "^8.3.2"
   }
 }

@@ -144,6 +144,9 @@ importers:
       '@the-neon/core':
         specifier: '*'
         version: 0.0.6
+      '@types/node':
+        specifier: ^24.10.1
+        version: 24.12.2
       uuid:
         specifier: ^8.3.1
         version: 8.3.2
@@ -7463,7 +7466,7 @@ snapshots:
 
   wkx@0.5.0:
     dependencies:
-      '@types/node': 14.18.63
+      '@types/node': 24.12.2
 
   word-wrap@1.2.5: {}
 

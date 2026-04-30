@@ -1,7 +1,8 @@
 {
   "name": "@the-neon/pg",
+  "version": "0.2.3",
   "main": "lib/index.js",
-  "version": "0.2.2",
+  "types": "lib/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,6 +16,8 @@
     "url": "https://github.com/the-neon/neon/issues"
   },
   "scripts": {
+    "build": "tsc -p .",
+    "prepublishOnly": "npm run build",
     "test": "jest --coverage"
   },
   "homepage": "https://github.com/the-neon/neon#readme",
@@ -24,6 +27,7 @@
   "devDependencies": {
     "@types/pg": "^8.20.0"
   },
+  "keywords": ["neon", "postgresql", "postgres", "database", "client", "typescript"],
   "author": "Stojce Slavkovski",
-  "description": "PostgreSQL client for Neon"
+  "description": "PostgreSQL client for Neon with transaction support"
 }

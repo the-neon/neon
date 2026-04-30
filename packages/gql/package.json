@@ -1,7 +1,8 @@
 {
   "name": "@the-neon/gql",
+  "version": "0.5.3",
   "main": "lib/index.js",
-  "version": "0.5.2",
+  "types": "lib/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -33,11 +34,12 @@
   "directories": {
     "lib": "lib"
   },
-  "scripts": {
-    "build": "tsc",
+"scripts": {
+    "build": "tsc -p .",
     "prepublishOnly": "npm run build",
     "test": "jest --coverage"
   },
+  "keywords": ["neon", "graphql", "generator", "typescript"],
   "author": "Stojce Slavkovski",
   "description": "GraphQL support (GQL Generator) for Neon"
 }
