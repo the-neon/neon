@@ -1,18 +1,17 @@
 {
   "extends": "@tsconfig/node24",
   "compilerOptions": {
-    "composite": false,
-    "outDir": "lib",
+    "outDir": "${configDir}/lib",
+    "module": "commonjs",
+    "declaration": true,
     "strict": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "typeRoots": ["./node_modules/@types"],
+    "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
-    "pretty": true,
     "resolveJsonModule": true,
     "noImplicitAny": false,
-    "module": "preserve"
+    "typeRoots": ["${configDir}/node_modules/@types"]
   },
-  "exclude": ["node_modules", "lib", "typings/**", "**/*.test.*"]
+  "exclude": ["node_modules", "${configDir}/lib", "typings/**", "**/*.test.*"]
 }

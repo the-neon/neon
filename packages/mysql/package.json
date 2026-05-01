@@ -1,7 +1,8 @@
 {
   "name": "@the-neon/mysql",
+  "version": "0.0.15",
   "main": "lib/index.js",
-  "version": "0.0.13",
+  "types": "lib/index.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -16,6 +17,11 @@
   "bugs": {
     "url": "https://github.com/the-neon/neon/issues"
   },
+"scripts": {
+    "build": "tsc -p .",
+    "prepublishOnly": "npm run build",
+    "test": "jest --coverage"
+  },
   "homepage": "https://github.com/the-neon/neon#readme",
   "directories": {
     "lib": "lib"
@@ -23,6 +29,7 @@
   "devDependencies": {
     "@types/node": "^14.6.4"
   },
-  "author": "",
-  "description": ""
+  "keywords": ["neon", "mysql", "database", "client", "sequelize", "typescript"],
+  "author": "Stojce Slavkovski",
+  "description": "MySQL client for Neon using Sequelize"
 }

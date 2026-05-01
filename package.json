@@ -12,6 +12,7 @@
   "packageManager": "pnpm@10.29.2",
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@apollo/protobufjs",
       "husky"
     ]
   },
@@ -28,7 +29,7 @@
     "version:patch": "pnpm --workspace-concurrency=1 -r exec pnpm version patch",
     "version:minor": "pnpm --workspace-concurrency=1 -r exec pnpm version minor",
     "version:major": "pnpm --workspace-concurrency=1 -r exec pnpm version major",
-    "publish": "pnpm clean && pnpm build && pnpm -r --workspace-concurrency=1 publish --access public",
+    "publish": "pnpm clean && pnpm build && pnpm -r publish --access public --no-git-checks",
     "pretty": "prettier --write './packages/**/*.{yml,yaml,json,ts,tsx,js,jsx,scss,css,md,html}'"
   },
   "devDependencies": {

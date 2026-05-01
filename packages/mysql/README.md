@@ -12,10 +12,12 @@ npm install @the-neon/mysql
 
 Requires environment variables:
 
-- `DB_HOST` — Database host
-- `DB_DATABASE` — Database name
-- `DB_USER` — Database user
-- `DB_PASSWORD` — Database password
+```bash
+DB_HOST=localhost
+DB_DATABASE=mydb
+DB_USER=root
+DB_PASSWORD=secret
+```
 
 ```typescript
 import MySqlDb, { QueryTypes } from "@the-neon/mysql";
@@ -40,13 +42,24 @@ await db.execute("SELECT * FROM users WHERE id = :id", { id: 1 });
 
 ## API
 
+### Transactions
+
 - `start()` — Begin transaction
 - `commit()` — Commit transaction
 - `rollback()` — Rollback transaction
-- `execute(sql, params?, queryType?, conn?)` — Execute raw SQL
+
+### Query
+
+- `execute(sql, params?, queryType?, conn?)` — Execute raw SQL with named parameters
+
+### CRUD
+
 - `insert(table, columns, conn?)` — Insert row
 - `update(sqlOrTable, condition, columns, conn?)` — Update rows
 - `delete(sqlOrTable, condition, conn?)` — Delete rows
+
+### Fetch
+
 - `getOne(sqlOrTable, params?, conn?)` — Fetch single row
 - `getMany(sqlOrTable, params?, conn?)` — Fetch multiple rows
 

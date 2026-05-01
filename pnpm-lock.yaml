@@ -70,9 +70,6 @@ importers:
       '@the-neon/core':
         specifier: '*'
         version: 0.0.6
-      '@types/uuid':
-        specifier: ^11.0.0
-        version: 11.0.0
       uuid:
         specifier: ^8.3.2
         version: 8.3.2
@@ -144,6 +141,9 @@ importers:
       '@the-neon/core':
         specifier: '*'
         version: 0.0.6
+      '@types/node':
+        specifier: ^24.10.1
+        version: 24.12.2
       uuid:
         specifier: ^8.3.1
         version: 8.3.2
@@ -1199,10 +1199,6 @@ packages:
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
-
-  '@types/uuid@11.0.0':
-    resolution: {integrity: sha512-HVyk8nj2m+jcFRNazzqyVKiZezyhDKrGUA3jlEcg/nZ6Ms+qHwocba1Y/AaVaznJTAM9xpdFSh+ptbNrhOGvZA==}
-    deprecated: This is a stub types definition. uuid provides its own type definitions, so you do not need this installed.
 
   '@types/uuid@9.0.8':
     resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
@@ -5114,10 +5110,6 @@ snapshots:
 
   '@types/stack-utils@2.0.3': {}
 
-  '@types/uuid@11.0.0':
-    dependencies:
-      uuid: 8.3.2
-
   '@types/uuid@9.0.8': {}
 
   '@types/validator@13.15.10': {}
@@ -7463,7 +7455,7 @@ snapshots:
 
   wkx@0.5.0:
     dependencies:
-      '@types/node': 14.18.63
+      '@types/node': 24.12.2
 
   word-wrap@1.2.5: {}
 
