@@ -8,7 +8,7 @@ import {
 } from "typescript";
 
 // import chalk from "chalk";
-import Mapper from "./Mapper";
+import Mapper from "./Mapper.js";
 
 enum BuiltinType {
   String = "String",

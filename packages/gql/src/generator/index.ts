@@ -20,9 +20,9 @@ import {
 
 // import chalk from "chalk";
 
-import { resolveConfig } from "./config";
-import GraphQlApiClientGenerator from "./GraphQlApiClientGenerator";
-import Mapper, { BuiltinType } from "./Mapper";
+import { resolveConfig } from "./config.js";
+import GraphQlApiClientGenerator from "./GraphQlApiClientGenerator.js";
+import Mapper, { BuiltinType } from "./Mapper.js";
 
 interface TypeProp {
   name: string;
@@ -617,7 +617,7 @@ lines.push(`
 const schema: string[] = [];
 
 schema.push(`
-import { gql } from 'apollo-server-lambda';
+import { gql } from 'graphql-tag';
 
 export const typeDefs = gql\`
 directive @auth(roles: String) on FIELD_DEFINITION

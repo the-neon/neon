@@ -1,0 +1,30 @@
+import { PoolClient } from "pg";
+declare class PostgresDB {
+    transaction: boolean;
+    _client?: PoolClient;
+    private static pool;
+    private connectionString;
+    constructor(connectionString: string);
+    start(): Promise<void>;
+    commit(): Promise<void>;
+    rollback(): Promise<void>;
+    queryAsJson(sql: string, args?: any[]): Promise<any | void>;
+    query(sql: string, args?: any[]): Promise<any | any[] | void>;
+    execute(sql: string, args?: any[]): Promise<any>;
+    insert<T = any>(table: string, columns: any): Promise<T>;
+    update<T = any>(table: string, filter: any, columns: any): Promise<T>;
+    delete<T = any>(table: string, filter: any): Promise<T>;
+    getOne<T = any>(sql: string, args?: any[]): Promise<T | null>;
+    getMany<T = any>(sql: string, args?: any[]): Promise<T[]>;
+    getById<T = any>(table: string, id: string | number, filter?: any): Promise<T | null>;
+    getByIds<T = any>(table: string, ids: (string | number)[], filter?: any): Promise<T[] | null>;
+    getCount(table: string, filter: any): Promise<any>;
+    private toArray;
+    private generateCondition;
+    private toSnakeCase;
+    private getDataStore;
+    private sanitize;
+    private camelize;
+    private castRow;
+}
+export default PostgresDB;
