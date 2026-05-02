@@ -21,6 +21,7 @@ enum ErrorPrefix {
   Authentication = "AUTH",
   Authorization = "AZ",
   Custom = "CUS",
+  custom = "CUS",
   ConstraintViolation = "CV",
   InputValidation = "IV",
   InputValidationInvalidFormat = "IV.IFMT",
