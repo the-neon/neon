@@ -103,11 +103,11 @@ class MySqlDb {
     return null;
   }
 
-  async getOne<T>(
+  async getOne<T = any>(
     sqlOrTable: string,
     params?: Record<string, unknown>,
     conn?: Sequelize,
-  ): Promise<T> {
+  ): Promise<T | null> {
     let results;
     if (sqlOrTable.toLowerCase().includes("select")) {
       results = await this.execute(sqlOrTable, params, QueryTypes.SELECT, conn);
@@ -129,7 +129,7 @@ class MySqlDb {
     return results?.[0];
   }
 
-  async getMany<T>(
+  async getMany<T = any>(
     sqlOrTable: string,
     params?: Record<string, unknown>,
     conn?: Sequelize,
@@ -158,7 +158,7 @@ class MySqlDb {
     ) as Promise<T[]>;
   }
 
-  async insert<T>(
+  async insert<T = any>(
     table: string,
     columns: Record<string, unknown>,
     conn?: Sequelize,
@@ -171,7 +171,7 @@ class MySqlDb {
     return this.execute(sql, columns, QueryTypes.INSERT, conn) as Promise<T>;
   }
 
-  async update<T>(
+  async update<T = any>(
     sqlOrTable: string,
     condition: Record<string, unknown>,
     columns: Record<string, unknown>,

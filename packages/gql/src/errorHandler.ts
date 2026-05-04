@@ -11,7 +11,7 @@ const tryParse = (str: string): Error[] | null | undefined => {
   try {
     const result = JSON.parse(str);
     if (result.type === "ApplicationError") {
-      return result as ApplicationError;
+      return [result as ApplicationError];
     }
     return result as Error[];
   } catch {
@@ -70,7 +70,7 @@ const errorHandler = (ex: GraphQLError): Error => {
   if (!originalErrorType && originalErrorMessage) {
     const errors = tryParse(originalErrorMessage);
     if (errors?.length) {
-      return handleApplicationError(errors, "");
+      return handleApplicationError(errors as ApplicationError[], "");
     }
   }
 
@@ -81,7 +81,7 @@ const errorHandler = (ex: GraphQLError): Error => {
       return new AuthenticationError(originalErrorMessage);
 
     case "ApplicationError":
-      return handleApplicationError([ex.originalError], originalErrorMessage);
+      return handleApplicationError([ex.originalError as ApplicationError], originalErrorMessage);
 
     case "InputError": {
       const errors = ex.originalError?.["errors"];

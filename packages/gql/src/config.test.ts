@@ -1,7 +1,10 @@
 import * as fs from "fs";
 import { resolveConfig } from "./config";
 
-jest.mock("fs");
+jest.mock("fs", () => ({
+  existsSync: jest.fn(),
+  readFileSync: jest.fn(),
+}));
 
 describe("config", () => {
   const originalCwd = process.cwd;

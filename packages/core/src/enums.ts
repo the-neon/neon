@@ -19,7 +19,9 @@ enum SkipAuthorization {
 
 enum ErrorPrefix {
   Authentication = "AUTH",
+  AuthenticationInvalidFormat = "AUTH.IFMT",
   Authorization = "AZ",
+  AuthorizationInvalidFormat = "AZ.IFMT",
   Custom = "CUS",
   ConstraintViolation = "CV",
   InputValidation = "IV",

@@ -75,10 +75,10 @@ class PostgresDB {
 
   public async execute(sql: string, args?: any[]): Promise<number> {
     const resp = await this.query(sql, args);
-    return resp["rowCount"];
+    return Number(resp?.["rowCount"] || 0);
   }
 
-  public async insert<T>(table: string, columns: any): Promise<T> {
+  public async insert<T = any>(table: string, columns: any): Promise<T> {
     const sanTable = this.sanitize(table);
     // await this.authorizationCheck({ table: sanTable, columns, filter: null, skipAuth });
 
@@ -92,7 +92,7 @@ class PostgresDB {
     return this.castRow<T>(resp?.["rows"]?.[0]);
   }
 
-  public async update<T>(table: string, filter: any, columns: any): Promise<T> {
+  public async update<T = any>(table: string, filter: any, columns: any): Promise<T> {
     const sanTable = this.sanitize(table);
     // await this.authorizationCheck({ table: sanTable, columns, filter, skipAuth });
 
@@ -109,7 +109,7 @@ class PostgresDB {
     return this.castRow<T>(resp?.["rows"]?.[0]);
   }
 
-  public async delete<T>(table: string, filter: any): Promise<T> {
+  public async delete<T = any>(table: string, filter: any): Promise<T> {
     const sanTable = this.sanitize(table);
     const sql = `DELETE FROM ${sanTable} WHERE ${this.generateCondition(
       filter,
@@ -119,7 +119,7 @@ class PostgresDB {
     return resp?.["rows"][0] as T;
   }
 
-  public async getOne<T>(sql: string, args?: any[]): Promise<T | null> {
+  public async getOne<T = any>(sql: string, args?: any[]): Promise<T | null> {
     const model = await this.query(sql, args);
     if (model && model["rowCount"] === 1) {
       return this.castRow<T>(model["rows"][0]);
@@ -127,7 +127,7 @@ class PostgresDB {
     return null;
   }
 
-  public async getMany<T>(sql: string, args?: any[]): Promise<T[]> {
+  public async getMany<T = any>(sql: string, args?: any[]): Promise<T[] | null> {
     const model = await this.query(sql, args);
 
     if (model && model?.["rowCount"] > 0) {
@@ -137,7 +137,7 @@ class PostgresDB {
     return [] as T[];
   }
 
-  public async getById<T>(
+  public async getById<T = any>(
     table: string,
     id: string | number,
     filter?: any,
@@ -149,7 +149,7 @@ class PostgresDB {
     return null;
   }
 
-  public async getByIds<T>(
+  public async getByIds<T = any>(
     table: string,
     ids: (string | number)[],
     filter?: any,

@@ -1,6 +1,6 @@
 {
   "name": "@the-neon/pg",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "license": "MIT",
@@ -27,7 +27,14 @@
   "devDependencies": {
     "@types/pg": "^8.20.0"
   },
-  "keywords": ["neon", "postgresql", "postgres", "database", "client", "typescript"],
+  "keywords": [
+    "neon",
+    "postgresql",
+    "postgres",
+    "database",
+    "client",
+    "typescript"
+  ],
   "author": "Stojce Slavkovski",
   "description": "PostgreSQL client for Neon with transaction support"
 }

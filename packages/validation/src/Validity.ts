@@ -1,5 +1,5 @@
 import { parse as uuidParse } from "uuid";
-import { integer, long, float } from "@the-neon/core";
+import type { integer, long, float } from "@the-neon/core";
 export class Valid {
   public static uuid(argValue: string): boolean {
     if (argValue) {

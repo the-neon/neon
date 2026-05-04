@@ -6,6 +6,8 @@ jest.mock("fs", () => ({
   writeFileSync: jest.fn(),
 }));
 
+const mockFs = jest.requireMock("fs");
+
 describe("GraphQlApiClientGenerator", () => {
   describe("createReqFields", () => {
     it("returns empty string when responseType is JSON", () => {
@@ -138,8 +140,6 @@ describe("GraphQlApiClientGenerator", () => {
   });
 
   describe("generateFiles", () => {
-    const fs = require("fs");
-
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -153,7 +153,7 @@ describe("GraphQlApiClientGenerator", () => {
         "/client",
       );
 
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
+      expect(mockFs.writeFileSync).toHaveBeenCalledWith(
         expect.stringMatching(/gqlClient\.js$/),
         expect.stringContaining("Amplify"),
       );
@@ -177,7 +177,7 @@ describe("GraphQlApiClientGenerator", () => {
         "/client",
       );
 
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
+      expect(mockFs.writeFileSync).toHaveBeenCalledWith(
         expect.stringMatching(/UserApi\.js$/),
         expect.any(String),
       );
@@ -186,11 +186,11 @@ describe("GraphQlApiClientGenerator", () => {
     it("does not write any files when clientPath is not provided", () => {
       GraphQlApiClientGenerator.generateFiles([], [], new Map(), "/output");
 
-      expect(fs.writeFileSync).not.toHaveBeenCalled();
+      expect(mockFs.writeFileSync).not.toHaveBeenCalled();
     });
 
     it("creates directory when clientPath does not exist", () => {
-      (fs.existsSync as jest.Mock).mockReturnValue(false);
+      mockFs.existsSync.mockReturnValue(false);
 
       GraphQlApiClientGenerator.generateFiles(
         [],
@@ -200,11 +200,11 @@ describe("GraphQlApiClientGenerator", () => {
         "/client",
       );
 
-      expect(fs.mkdirSync).toHaveBeenCalled();
+      expect(mockFs.mkdirSync).toHaveBeenCalled();
     });
 
     it("skips directory creation when clientPath already exists", () => {
-      (fs.existsSync as jest.Mock).mockReturnValue(true);
+      mockFs.existsSync.mockReturnValue(true);
 
       GraphQlApiClientGenerator.generateFiles(
         [],
@@ -214,7 +214,7 @@ describe("GraphQlApiClientGenerator", () => {
         "/client",
       );
 
-      expect(fs.mkdirSync).not.toHaveBeenCalled();
+      expect(mockFs.mkdirSync).not.toHaveBeenCalled();
     });
   });
 });

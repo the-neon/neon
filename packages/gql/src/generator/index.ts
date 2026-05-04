@@ -617,7 +617,7 @@ lines.push(`
 const schema: string[] = [];
 
 schema.push(`
-import { gql } from 'apollo-server-lambda';
+import { gql } from 'graphql-tag';
 
 export const typeDefs = gql\`
 directive @auth(roles: String) on FIELD_DEFINITION

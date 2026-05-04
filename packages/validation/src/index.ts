@@ -103,7 +103,7 @@ export function Validate(
                 validationErrors.push(
                   new ApplicationError(
                     ErrorPrefix.InputValidation,
-                    key,
+                    [key],
                     `'${key}' ${ex.message}`,
                   ),
                 );
@@ -115,7 +115,7 @@ export function Validate(
                     validationErrors.push(
                       new ApplicationError(
                         ErrorPrefix.InputValidationInvalidFormat,
-                        key,
+                        [key],
                         `Invalid email address for '${key}' (${argValue})`,
                       ),
                     );
@@ -127,7 +127,7 @@ export function Validate(
                     validationErrors.push(
                       new ApplicationError(
                         ErrorPrefix.InputValidationRequired,
-                        key,
+                        [key],
                         `'${key}'is required`,
                       ),
                     );
@@ -139,7 +139,7 @@ export function Validate(
                     validationErrors.push(
                       new ApplicationError(
                         ErrorPrefix.InputValidationInvalidFormat,
-                        key,
+                        [key],
                         `'${key}'is not valid UUID`,
                       ),
                     );
@@ -151,7 +151,7 @@ export function Validate(
                     validationErrors.push(
                       new ApplicationError(
                         ErrorPrefix.InputValidationSmallerThan,
-                        key,
+                        [key],
                         `'${key}'is smaller or equal to 0`,
                       ),
                     );
@@ -162,7 +162,7 @@ export function Validate(
                   validationErrors.push(
                     new ApplicationError(
                       ErrorPrefix.InputValidation,
-                      key,
+                      [key],
                       `Invlid validation for '${key}'`,
                     ),
                   );
