@@ -17,7 +17,7 @@
     "aws-amplify": "^6.0.0"
   },
   "dependencies": {
-    "@graphql-tools/schema": "^10.0.32",
+    "@graphql-tools/schema": "^10.0.33",
     "apollo-server": "^3.13.0",
     "chalk": "^5.6.2",
     "graphql": "^16.13.2",
